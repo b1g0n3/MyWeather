@@ -3,60 +3,20 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.myweather.MainActivity" >
-    
-    <TextView
-        android:id="@+id/current_temp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="current_temp="
-        android:textColor="#000" />
-    <TextView
-        android:id="@+id/id_loctime"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="id_loctime="
-        android:textColor="#000" />
 
     <TextView
-        android:id="@+id/id_loclong"
-        android:layout_width="fill_parent"
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="id_loclong="
-        android:textColor="#000" />
-    
-        <TextView
-        android:id="@+id/id_loclat"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="id_loclat="
-        android:textColor="#000" />
-        
-        <TextView
-        android:id="@+id/id_locprevtime"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="id_locprevtime="
-        android:textColor="#000" />
-        
-            <TextView
-        android:id="@+id/id_locprevlong"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="id_locprevlong="
-        android:textColor="#000" />
-                    <TextView
-        android:id="@+id/id_locprevlat"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="id_locprevlat="
-        android:textColor="#000" />
- 
-            
+        android:text="TextView"
+        android:textColor="#fff"
+        android:textSize="14sp" />
             
 </LinearLayout>
