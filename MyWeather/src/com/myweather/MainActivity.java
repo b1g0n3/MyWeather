@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.reconinstruments.ReconSDK.*;
 
+import dme.forecastiolib.ForecastIO;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -63,12 +64,20 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	        System.out.println("longitude="+longitude);
 			mStatus = (TextView) findViewById(R.id.status);
 			mStatus.setText("Lat:"+latitude+" / long:"+longitude);
-			
+			ForecastIO fio = new ForecastIO("28faca837266a521f823ab10d1a45050"); //instantiate the class with the API key. 
+			fio.setUnits(ForecastIO.UNITS_SI);             //sets the units as SI - optional
+			fio.setExcludeURL("hourly,minutely");             //excluded the minutely and hourly reports from the reply
+			fio.getForecast(getString(latitude), getString(longitude));   //sets the latitude and longitude - not optional
 	    }
 	    else
 	    {
 	        System.out.println("No GPS Fix");
 	    }
+	}
+
+	private String getString(double latitude2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
