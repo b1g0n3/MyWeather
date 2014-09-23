@@ -43,7 +43,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		ForecastIO fio = new ForecastIO("28faca837266a521f823ab10d1a45050"); //instantiate the class with the API key. 
 		fio.setUnits(ForecastIO.UNITS_SI);             //sets the units as SI - optional
 		fio.setExcludeURL("hourly,minutely");             //excluded the minutely and hourly reports from the reply
-		String response = Some_External_Http_Library.GET(fio.getUrl("38.7252993", "-9.1500364"));
+	//	String response = Some_External_Http_Library.GET(fio.getUrl("38.7252993", "-9.1500364"));
 		
 //		fio.setUnits(ForecastIO.UNITS_SI);             //sets the units as SI - optional
 //		fio.setExcludeURL("hourly,minutely");             //excluded the minutely and hourly reports from the reply
