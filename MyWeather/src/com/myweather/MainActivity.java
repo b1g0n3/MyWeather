@@ -1,12 +1,12 @@
 package com.myweather;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import com.bryanpgardner.forecastiowrapper.*;
 import com.reconinstruments.ReconSDK.*;
 
-import dme.forecastiolib.FIOCurrently;
-import dme.forecastiolib.ForecastIO;
 import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
@@ -39,20 +39,122 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		longitude=3.1304383277893066;
 		mStatus = (TextView) findViewById(R.id.status);
 		mStatus.setText("Lat:"+latitude+" / long:"+longitude);
+		String key = "28faca837266a521f823ab10d1a45050";
 		System.out.println("Lat:"+latitude+" / long:"+longitude);
-		ForecastIO fio = new ForecastIO("28faca837266a521f823ab10d1a45050"); //instantiate the class with the API key. 
-		fio.setUnits(ForecastIO.UNITS_SI);             //sets the units as SI - optional
-		fio.setExcludeURL("hourly,minutely");             //excluded the minutely and hourly reports from the reply
-	//	String response = Some_External_Http_Library.GET(fio.getUrl("38.7252993", "-9.1500364"));
 		
-//		fio.setUnits(ForecastIO.UNITS_SI);             //sets the units as SI - optional
-//		fio.setExcludeURL("hourly,minutely");             //excluded the minutely and hourly reports from the reply
-//		fio.getForecast(getString(latitude), getString(longitude));   //sets the latitude and longitude - not optional
-//		FIOCurrently currently = new FIOCurrently(fio);
-//	    System.out.println("\nCurrently\n");
-//	    String [] f  = currently.get().getFieldsArray();
-//	    for(int i = 0; i<f.length;i++)
-//	        System.out.println(f[i]+": "+currently.get().getByKey(f[i]));
+		ForecastIO test = new ForecastIO(latitude,longitude,key);
+		try {
+			test.getForecast();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		DataBlockDaily daily = new DataBlockDaily(test.getDaily());
+		DataBlockHourly hourly = new DataBlockHourly(test.getHourly());
+		DataPointCurrently current = new DataPointCurrently(test.getCurrently());
+  //              AlertsArray alerts = new AlertsArray(test.getAlerts());
+		
+		System.out.println("ForecastIO test cases:");
+		System.out.println("Latitude: " + test.getLat() + " Longitude: " + test.getLon());
+		System.out.println("API key: " + test.getApi());
+		System.out.println("Timezone: " + test.getTimezone());
+		System.out.println("Offset: " + test.getOffset());
+		System.out.println("Url: " + test.getApiUrl());
+		
+		
+		System.out.println("\nDataPointCurrently test cases: ");
+		System.out.println("Time: " + current.getTime());
+		System.out.println("Summary: " + current.getSummary());
+		System.out.println("Icon: " + current.getIcon());
+		System.out.println("Precip Intensity: " + current.getPrecipIntensity());
+		System.out.println("Precip Probability: " + current.getPrecipProbability());
+		System.out.println("Precip Type: " + current.getPrecipType());
+		System.out.println("Dew Point: " + current.getDewPoint());
+		System.out.println("Wind Speed: " + current.getWindSpeed());
+		System.out.println("Wind bearing: " + current.getWindBearing());
+		System.out.println("Cloud cover: " + current.getCloudCover());
+		System.out.println("Humidity: " + current.getHumidity());
+		System.out.println("Pressure: " + current.getPressure());
+		System.out.println("Visibility: " + current.getVisibility());
+		System.out.println("Ozone: " + current.getOzone());
+		System.out.println("Temperature: " + current.getTemperature());
+		System.out.println("Apparent Temperature: " + current.getApparentTemperature());
+		System.out.println("Nearest Storm Distance: " + current.getNearestStormDistance());
+		System.out.println("Nearest Storm Bearing: " + current.getNearestStormBearing());
+		
+		System.out.println("\nDataBlockDaily test cases:");
+		System.out.println("Daily summary: " + daily.getSummary());
+		System.out.println("Daily icon: " + daily.getIcon());
+		System.out.println("Data point objects: " + daily.numDailyDataPoint());
+		for (int i = 0; i < daily.numDailyDataPoint(); i++){
+			System.out.println("\n");
+			System.out.println("Time: " + daily.getDailyDataPoint(i).getTime());
+			System.out.println("Summary: " + daily.getDailyDataPoint(i).getSummary());
+			System.out.println("Icon: " + daily.getDailyDataPoint(i).getIcon());
+			System.out.println("Precip Intensity: " + daily.getDailyDataPoint(i).getPrecipIntensity());
+			System.out.println("Precip Probability: " + daily.getDailyDataPoint(i).getPrecipProbability());
+			System.out.println("Precip Type: " + daily.getDailyDataPoint(i).getPrecipType());
+			System.out.println("Dew Point: " + daily.getDailyDataPoint(i).getDewPoint());
+			System.out.println("Wind Speed: " + daily.getDailyDataPoint(i).getWindSpeed());
+			System.out.println("Wind bearing: " + daily.getDailyDataPoint(i).getWindBearing());
+			System.out.println("Cloud cover: " + daily.getDailyDataPoint(i).getCloudCover());
+			System.out.println("Humidity: " + daily.getDailyDataPoint(i).getHumidity());
+			System.out.println("Pressure: " + daily.getDailyDataPoint(i).getPressure());
+			System.out.println("Visibility: " + daily.getDailyDataPoint(i).getVisibility());
+			System.out.println("Ozone: " + daily.getDailyDataPoint(i).getOzone());
+			System.out.println("Sunrise: " + daily.getDailyDataPoint(i).getSunriseTime());
+			System.out.println("Sunset: " + daily.getDailyDataPoint(i).getSunsetTime());
+			System.out.println("Moon Phase: " + daily.getDailyDataPoint(i).getMoonPhase());
+			System.out.println("Precip Intensity Max: " + daily.getDailyDataPoint(i).getPrecipIntensityMax());
+			System.out.println("Precip Intensity Max Time: " + daily.getDailyDataPoint(i).getPrecipIntensityMaxTime());
+			System.out.println("Precip Accumulation: " + daily.getDailyDataPoint(i).getPrecipAccumulation());
+			System.out.println("Temperature Min: " + daily.getDailyDataPoint(i).getTemperatureMin());
+			System.out.println("Temperature Min Time: " + daily.getDailyDataPoint(i).getTemperatureMinTime());
+			System.out.println("Temperature Max: " + daily.getDailyDataPoint(i).getTemperatureMax());
+			System.out.println("Temperature Max Time: " + daily.getDailyDataPoint(i).getTemperatureMaxTime());
+			System.out.println("Apparent Temperature Min: " + daily.getDailyDataPoint(i).getApparentTemperatureMin());
+			System.out.println("Apparent Temperature Min Time: " + daily.getDailyDataPoint(i).getApparentTemperatureMinTime());
+			System.out.println("Apparent Temperature Max: " + daily.getDailyDataPoint(i).getApparentTemperatureMax());
+			System.out.println("Apparent Temperature Max Time: " + daily.getDailyDataPoint(i).getApparentTemperatureMaxTime());
+		}
+		
+		System.out.println("\nDataBlockHourly test cases: ");
+		System.out.println("Hourly summary: " + hourly.getSummary());
+		System.out.println("Hourly icon: " + hourly.getIcon());
+		System.out.println("Data point objects: " + hourly.numHourlyDataPoint());
+		for (int i = 0; i < hourly.numHourlyDataPoint(); i++){
+			System.out.println("\n");
+			System.out.println("Time: " + hourly.getHourlyDataPoint(i).getTime());
+			System.out.println("Summary: " + hourly.getHourlyDataPoint(i).getSummary());
+			System.out.println("Icon: " + hourly.getHourlyDataPoint(i).getIcon());
+			System.out.println("Precip Intensity: " + hourly.getHourlyDataPoint(i).getPrecipIntensity());
+			System.out.println("Precip Probability: " + hourly.getHourlyDataPoint(i).getPrecipProbability());
+			System.out.println("Precip Type: " + hourly.getHourlyDataPoint(i).getPrecipType());
+			System.out.println("Dew Point: " + hourly.getHourlyDataPoint(i).getDewPoint());
+			System.out.println("Wind Speed: " + hourly.getHourlyDataPoint(i).getWindSpeed());
+			System.out.println("Wind bearing: " + hourly.getHourlyDataPoint(i).getWindBearing());
+			System.out.println("Cloud cover: " + hourly.getHourlyDataPoint(i).getCloudCover());
+			System.out.println("Humidity: " + hourly.getHourlyDataPoint(i).getHumidity());
+			System.out.println("Pressure: " + hourly.getHourlyDataPoint(i).getPressure());
+			System.out.println("Visibility: " + hourly.getHourlyDataPoint(i).getVisibility());
+			System.out.println("Ozone: " + hourly.getHourlyDataPoint(i).getOzone());
+			System.out.println("Temperature: " + hourly.getHourlyDataPoint(i).getTemperature());
+			System.out.println("Apparent Temperature: " + hourly.getHourlyDataPoint(i).getApparentTemperature());
+			
+		}
+                
+    //            if (test.getAlerts() != null) {
+    //                System.out.println("\nAlertsArray test cases: ");
+    //                System.out.println("Number of alerts: " + alerts.getNumAlertObjects());
+    //                for (int i = 0; i < alerts.getNumAlertObjects(); i++) {
+    //                    System.out.println("\n");
+    //                    System.out.println("Title: " + alerts.getAlertObject(i).getTitle());
+    //                    System.out.println("Description: " + alerts.getAlertObject(i).getDescription());
+    //                    System.out.println("Expires: " + alerts.getAlertObject(i).getExpires());
+    //                    System.out.println("URI: " + alerts.getAlertObject(i).getUri());
+    //                }
+    //            }
 		
     }
 
