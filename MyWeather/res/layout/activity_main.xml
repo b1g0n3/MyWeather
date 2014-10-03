@@ -12,11 +12,12 @@
     tools:context="com.myweather.MainActivity" >
 
     <TextView
-        android:id="@+id/status"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.74"
         android:text="TextView"
         android:textColor="#fff"
         android:textSize="14sp" />
-            
+
 </LinearLayout>
