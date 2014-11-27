@@ -152,21 +152,15 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 				//result=String(response.getBody());
 				textView.setText("Data received...");
 				System.out.println("return to main...");
-				System.out.println(response.getBody());
-				textView.setText(""+response.getBody());
-				
+				result=new String(response.getBody());
+				textView.setText("result="+result);
+				System.out.println("result="+result);	
 			}
-
-		//	private String String(byte[] body) {
-		//		// TODO Auto-generated method stub
-		//		return null;
-		//	}
-
+			
 			@Override
 			public void onError(int requestId, ERROR_TYPE type, String message) {
 				System.out.println("Error: " + type.toString() + "(" + message + ")");
 			}
-
 		};
     
 }
