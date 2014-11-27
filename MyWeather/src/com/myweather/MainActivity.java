@@ -29,7 +29,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements IReconDataReceiver, MyListener.Listener {
+public class MainActivity extends Activity implements IReconDataReceiver {
 	
 	TextView mCurrentTemp;
     private TextView mStatus;
@@ -41,7 +41,9 @@ public class MainActivity extends Activity implements IReconDataReceiver, MyList
 	public double longitude;
 	static String key = "28faca837266a521f823ab10d1a45050";
     private MyListener mListener;
-
+    public int testByte;
+    String PreviousResult;
+    
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,15 +59,8 @@ public class MainActivity extends Activity implements IReconDataReceiver, MyList
     	String PreviousResult = sharedpreferences.getString("PreviousResult", "");
     	System.out.println("Previous="+PreviousResult);
     	doRefresh();
-    	
-        mListener = new MyListener();
-        mListener.registerListener(this);
-        mListener.doYourWork();
+//    	 };
 
-		//ForecastIO fio = new ForecastIO(key);
-		//fio.getForecast(answer);
-		//FIOCurrently currently = new FIOCurrently(fio);
-		//textView.setText("temperature="+currently.get().temperature());
 	}
     
     
@@ -74,7 +69,7 @@ public class MainActivity extends Activity implements IReconDataReceiver, MyList
 		super.onDestroy();
 		SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
 		SharedPreferences.Editor editor = preferences.edit();
-		editor.putString("PreviousResult","blabla");
+		editor.putString("PreviousResult",PreviousResult);
 		editor.apply();
 		client.close();
 	}
@@ -88,6 +83,10 @@ public class MainActivity extends Activity implements IReconDataReceiver, MyList
 		mDataManager.receiveData(this, ReconEvent.TYPE_LOCATION);
 		textView.setText("Waiting for GPS fix...");
 		System.out.println("Waiting for GPS fix...");
+		result="noGps";
+		textView.setText("result="+result);
+		System.out.println("result="+result);
+
 	}
 		
 		public void onReceiveCompleted(int status, ReconDataResult result)
@@ -142,7 +141,9 @@ public class MainActivity extends Activity implements IReconDataReceiver, MyList
 			if (-1 == client.sendRequest(request)) {
 				Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
 				System.out.println("HUD not connected - No Internet");
-				result="NoInternet";
+				result="NoInternet"; 
+				textView.setText("result="+result);
+				System.out.println("result="+result);
 			} else {
 				System.out.println("Request Sent");
 			}
@@ -157,7 +158,8 @@ public class MainActivity extends Activity implements IReconDataReceiver, MyList
 				System.out.println("return to main...");
 				result=new String(response.getBody());
 				textView.setText("result="+result);
-				System.out.println("result="+result);	
+				System.out.println("result="+result);
+//				System.out.println("result="+result);	
 			}
 			
 			@Override
@@ -165,14 +167,5 @@ public class MainActivity extends Activity implements IReconDataReceiver, MyList
 				System.out.println("Error: " + type.toString() + "(" + message + ")");
 			}
 		};
-	    @Override
-	    public void onStateChange(boolean state) {
-	 
-	        if (state) {
-	            textView.setText("on");
-	        } else {
-	            textView.setText("off");
-	        }
-	 
-	    }
+
 }
