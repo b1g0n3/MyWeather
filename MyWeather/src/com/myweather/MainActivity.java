@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.myweather.weatherlib;
+import com.myweather.MyListener;
 import com.github.dvdme.ForecastIOLib.FIOCurrently;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
 import com.reconinstruments.ReconSDK.*;
@@ -29,7 +29,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements IReconDataReceiver {
+public class MainActivity extends Activity implements IReconDataReceiver, MyListener.Listener {
 	
 	TextView mCurrentTemp;
     private TextView mStatus;
@@ -40,7 +40,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	public double latitude;
 	public double longitude;
 	static String key = "28faca837266a521f823ab10d1a45050";
-
+    private MyListener mListener;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,10 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     	System.out.println("Previous="+PreviousResult);
     	doRefresh();
     	
-    	
+        mListener = new MyListener();
+        mListener.registerListener(this);
+        mListener.doYourWork();
+
 		//ForecastIO fio = new ForecastIO(key);
 		//fio.getForecast(answer);
 		//FIOCurrently currently = new FIOCurrently(fio);
@@ -162,5 +165,14 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 				System.out.println("Error: " + type.toString() + "(" + message + ")");
 			}
 		};
-    
+	    @Override
+	    public void onStateChange(boolean state) {
+	 
+	        if (state) {
+	            textView.setText("on");
+	        } else {
+	            textView.setText("off");
+	        }
+	 
+	    }
 }
