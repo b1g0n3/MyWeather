@@ -9,6 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.myweather.MyListener;
 import com.github.dvdme.ForecastIOLib.FIOCurrently;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
@@ -37,12 +41,12 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	private TextView textView;
 	public static String result;
 	private static ReconOSHttpClient client;
-	public double latitude;
-	public double longitude;
+	public double latitude,oldLatitude;
+	public double longitude,oldLongitude;
 	static String key = "28faca837266a521f823ab10d1a45050";
     private MyListener mListener;
     public int testByte;
-    String PreviousResult;
+    String PreviousResult,temp;
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,30 +54,45 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		setContentView(R.layout.activity_main);
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy); 
-		
 		textView = (TextView) findViewById(R.id.text_view);
 		textView.setMovementMethod(new ScrollingMovementMethod());
 		
 	/// Recuperation de la session precedente
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
-    	String PreviousResult = sharedpreferences.getString("PreviousResult", "");
-    	System.out.println("Previous="+PreviousResult);
+    	PreviousResult = sharedpreferences.getString("PreviousResult", "");
+    	temp = sharedpreferences.getString("latitude", "");
+    	oldLatitude = new Double(temp);
+    	temp = sharedpreferences.getString("longitude", "");
+    	oldLongitude = new Double(temp);
     	doRefresh();
 //    	 };
-
 	}
-    
     
     @Override
 	protected void onDestroy() {
 		super.onDestroy();
-		SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
-		SharedPreferences.Editor editor = preferences.edit();
-		editor.putString("PreviousResult",PreviousResult);
-		editor.apply();
 		client.close();
 	}
 
+    private void onDisplay(String data) {
+    	if (data !=null) {
+    		ForecastIO fio = new ForecastIO(key);
+    		fio.getForecast(data);
+    		FIOCurrently currently = new FIOCurrently(fio);
+    	    //Print currently data
+    		System.out.println("\nCurrently\n");
+    		String [] f  = currently.get().getFieldsArray();
+    		for(int i = 0; i<f.length;i++)
+    			System.out.println(f[i]+": "+currently.get().getByKey(f[i]));
+    		textView.setText(currently.get().getByKey("icon"));
+    	} else {
+    		System.out.println("nothing to display or bad json...");
+    		System.out.println("data="+data);
+    		
+	        textView.setText("nothing to display...");
+    	}
+    }
+    
 ////////////////////////////////////////////////////
 	private void doRefresh() {
 		result="";
@@ -83,9 +102,9 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		mDataManager.receiveData(this, ReconEvent.TYPE_LOCATION);
 		textView.setText("Waiting for GPS fix...");
 		System.out.println("Waiting for GPS fix...");
-		result="noGps";
-		textView.setText("result="+result);
-		System.out.println("result="+result);
+//		result="noGps";
+//		textView.setText("result="+result);
+//		System.out.println("result="+result);
 
 	}
 		
@@ -105,7 +124,12 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			    {
 			        latitude=loc.getLatitude();
 			        longitude=loc.getLongitude();
-			        textView.setText("Position set...");
+					SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
+					SharedPreferences.Editor editor = preferences.edit();
+					editor.putString("latitude", String.valueOf(latitude) );
+					editor.putString("longitude", String.valueOf(longitude));
+					editor.apply();
+//			        textView.setText("Position set...");
 					System.out.println("Lat:"+latitude+" / long:"+longitude);
 					System.out.println("Fetching data...");
 			        textView.setText("Fetching data...");
@@ -123,13 +147,16 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			    else
 			    {
 			        System.out.println("No GPS Fix");
+					System.out.println("Displaying old data...");
+			        textView.setText("Displaying old data...");
+					onDisplay(PreviousResult);
 			    }
 		}
 
-		private String getString(double latitude2) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+//		private String getString(double latitude2) {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
 
 		@Override
 		public void onFullUpdateCompleted(int arg0, ArrayList<ReconDataResult> arg1) {
@@ -141,9 +168,12 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			if (-1 == client.sendRequest(request)) {
 				Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
 				System.out.println("HUD not connected - No Internet");
-				result="NoInternet"; 
-				textView.setText("result="+result);
-				System.out.println("result="+result);
+//				result="NoInternet"; 
+//				textView.setText("result="+result);
+//				System.out.println("result="+result);
+				System.out.println("Displaying old data...");
+		        textView.setText("Displaying old data...");
+				onDisplay(PreviousResult);
 			} else {
 				System.out.println("Request Sent");
 			}
@@ -157,9 +187,16 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 				textView.setText("Data received...");
 				System.out.println("return to main...");
 				result=new String(response.getBody());
-				textView.setText("result="+result);
-				System.out.println("result="+result);
-//				System.out.println("result="+result);	
+//				textView.setText("result="+result);
+				PreviousResult=result;
+				SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString("PreviousResult",PreviousResult);
+				editor.apply();
+//				System.out.println("result="+result);
+				System.out.println("Displaying data...");
+		        textView.setText("Displaying data...");
+				onDisplay(result);
 			}
 			
 			@Override
@@ -167,5 +204,4 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 				System.out.println("Error: " + type.toString() + "(" + message + ")");
 			}
 		};
-
 }
