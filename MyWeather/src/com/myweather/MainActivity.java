@@ -1,18 +1,11 @@
 package com.myweather;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.myweather.MyListener;
 import com.github.dvdme.ForecastIOLib.FIOCurrently;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
@@ -21,8 +14,6 @@ import com.reconinstruments.webapi.IReconHttpCallback;
 import com.reconinstruments.webapi.ReconHttpRequest;
 import com.reconinstruments.webapi.ReconHttpResponse;
 import com.reconinstruments.webapi.ReconOSHttpClient;
-import com.reconinstruments.webapi.IReconHttpCallback.ERROR_TYPE;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -46,9 +37,11 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	static String key = "28faca837266a521f823ab10d1a45050";
     private MyListener mListener;
     public int testByte;
+    String language,unit;
     String PreviousResult,temp;
     
-    @Override
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
@@ -60,10 +53,13 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	/// Recuperation de la session precedente
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
     	PreviousResult = sharedpreferences.getString("PreviousResult", "");
-    	temp = sharedpreferences.getString("latitude", "");
-    	oldLatitude = new Double(temp);
-    	temp = sharedpreferences.getString("longitude", "");
-    	oldLongitude = new Double(temp);
+    	language = sharedpreferences.getString("Language", "En");
+    	unit = sharedpreferences.getString("Unit", "F");
+    	temp = sharedpreferences.getString("latitude", "0");
+    	oldLatitude = Double.valueOf(temp);
+    	temp = sharedpreferences.getString("longitude", "0");
+    	oldLongitude = Double.valueOf(temp);
+    	System.out.println("oldvalues:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit);
     	doRefresh();
 //    	 };
 	}
@@ -128,6 +124,8 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 					SharedPreferences.Editor editor = preferences.edit();
 					editor.putString("latitude", String.valueOf(latitude) );
 					editor.putString("longitude", String.valueOf(longitude));
+					editor.putString("Language", String.valueOf(language) );
+					editor.putString("Unit", String.valueOf(unit));
 					editor.apply();
 //			        textView.setText("Position set...");
 					System.out.println("Lat:"+latitude+" / long:"+longitude);
