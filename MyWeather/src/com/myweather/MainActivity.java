@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.myweather.MyListener;
 import com.github.dvdme.ForecastIOLib.FIOCurrently;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
@@ -14,17 +15,22 @@ import com.reconinstruments.webapi.IReconHttpCallback;
 import com.reconinstruments.webapi.ReconHttpRequest;
 import com.reconinstruments.webapi.ReconHttpResponse;
 import com.reconinstruments.webapi.ReconOSHttpClient;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.method.ScrollingMovementMethod;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements IReconDataReceiver {
+public class MainActivity extends Activity implements IReconDataReceiver, OnClickListener { 
 	
 	TextView mCurrentTemp;
     private TextView mStatus;
@@ -40,7 +46,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     String language,unit;
     String PreviousResult,temp;
     
-
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,7 +55,9 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		StrictMode.setThreadPolicy(policy); 
 		textView = (TextView) findViewById(R.id.text_view);
 		textView.setMovementMethod(new ScrollingMovementMethod());
-		
+
+	    
+
 	/// Recuperation de la session precedente
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
     	PreviousResult = sharedpreferences.getString("PreviousResult", "");
@@ -63,7 +71,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     	doRefresh();
 //    	 };
 	}
-    
+   
     @Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -90,6 +98,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     }
     
 ////////////////////////////////////////////////////
+    
 	private void doRefresh() {
 		result="";
 		client = new ReconOSHttpClient(this, clientCallback);
@@ -202,4 +211,11 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 				System.out.println("Error: " + type.toString() + "(" + message + ")");
 			}
 		};
+
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			System.out.println("click");
+		}
 }
