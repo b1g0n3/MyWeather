@@ -40,10 +40,20 @@ public class SettingsActivity extends PreferenceActivity {
 	private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
 	@Override
+	protected void onDestroy() {
+		overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
+		super.onDestroy();
+		System.out.println("je passe par la");
+		overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
+
+	}
+	
+	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
 		setupSimplePreferencesScreen();
+
 	}
 
 	/**

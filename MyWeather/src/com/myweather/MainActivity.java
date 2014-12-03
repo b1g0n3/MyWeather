@@ -27,10 +27,11 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements IReconDataReceiver, OnClickListener { 
+public class MainActivity extends Activity implements IReconDataReceiver { 
 	
 	TextView mCurrentTemp;
     private TextView mStatus;
@@ -54,7 +55,8 @@ public class MainActivity extends Activity implements IReconDataReceiver, OnClic
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy); 
 		textView = (TextView) findViewById(R.id.text_view);
-		textView.setMovementMethod(new ScrollingMovementMethod());
+	    final Button button_refresh = (Button) findViewById(R.id.button_refresh);
+//		textView.setMovementMethod(new ScrollingMovementMethod());
 
 	    
 
@@ -71,13 +73,40 @@ public class MainActivity extends Activity implements IReconDataReceiver, OnClic
     	doRefresh();
 //    	 };
 	}
+	
+	@Override 
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		System.out.println("Keydown: ("+keyCode+")");
+	    switch (keyCode) {
+	        case KeyEvent.KEYCODE_DPAD_DOWN :
+	        { 
+	    		System.out.println("Keydown: settings ("+keyCode+")");	    		
+	        	startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+	        	overridePendingTransition(R.anim.slideup_in, R.anim.slideup_out);
+	        	break;
+	        }
+	        case KeyEvent.KEYCODE_DPAD_CENTER :
+	        {
+	        	doRefresh();
+	        	break;
+	        }
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
    
     @Override
 	protected void onDestroy() {
 		super.onDestroy();
 		client.close();
 	}
-
+    
+    @Override
+	protected void onResume() {
+		super.onResume();
+	    System.out.println("et par la");
+	    overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
+	}
+    
     private void onDisplay(String data) {
     	if (data !=null) {
     		ForecastIO fio = new ForecastIO(key);
@@ -117,8 +146,8 @@ public class MainActivity extends Activity implements IReconDataReceiver, OnClic
 		{
 			    if (status != ReconSDKManager.STATUS_OK)
 			    {
-			    	Toast toast = Toast.makeText(this,"Communication Failure with Transcend Service",Toast.LENGTH_LONG);
-			        toast.show();
+			    	//Toast toast = Toast.makeText(this,"Communication Failure with Transcend Service",Toast.LENGTH_LONG);
+			        //toast.show();
 			        System.out.println("Communication Failure with Transcend Service");
 			        return;
 			    }
@@ -212,10 +241,4 @@ public class MainActivity extends Activity implements IReconDataReceiver, OnClic
 			}
 		};
 
-
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			System.out.println("click");
-		}
 }
