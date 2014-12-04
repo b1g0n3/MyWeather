@@ -24,10 +24,14 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,10 +60,6 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		StrictMode.setThreadPolicy(policy); 
 		textView = (TextView) findViewById(R.id.text_view);
 	    final Button button_refresh = (Button) findViewById(R.id.button_refresh);
-//		textView.setMovementMethod(new ScrollingMovementMethod());
-
-	    
-
 	/// Recuperation de la session precedente
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
     	PreviousResult = sharedpreferences.getString("PreviousResult", "");
@@ -71,7 +71,6 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     	oldLongitude = Double.valueOf(temp);
     	System.out.println("oldvalues:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit);
     	doRefresh();
-//    	 };
 	}
 	
 	@Override 
@@ -103,8 +102,17 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     @Override
 	protected void onResume() {
 		super.onResume();
-	    System.out.println("et par la");
 	    overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
+
+	    LayoutInflater inflater = getLayoutInflater();
+    	View layout = inflater.inflate(R.layout.toast,(ViewGroup) findViewById(R.id.toast_layout_root));
+    	ImageView image = (ImageView) layout.findViewById(R.id.image);
+    	image.setImageResource(R.drawable.scroll2);
+    	Toast toast = new Toast(getApplicationContext());
+    	toast.setGravity(Gravity.RIGHT, 0, 0);
+    	toast.setDuration(Toast.LENGTH_SHORT);
+    	toast.setView(layout);
+    	toast.show();
 	}
     
     private void onDisplay(String data) {
@@ -131,7 +139,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	private void doRefresh() {
 		result="";
 		client = new ReconOSHttpClient(this, clientCallback);
-		Toast.makeText(this, "Reading GPS", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();
 		ReconSDKManager mDataManager   = ReconSDKManager.Initialize(this);
 		mDataManager.receiveData(this, ReconEvent.TYPE_LOCATION);
 		textView.setText("Waiting for GPS fix...");
@@ -177,7 +185,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 
 					} catch (MalformedURLException e) {
 						System.out.println("MalformedURLException...");
-						Toast.makeText(this, "erreur http:"+e.getMessage(), Toast.LENGTH_LONG).show();
+//						Toast.makeText(this, "erreur http:"+e.getMessage(), Toast.LENGTH_LONG).show();
 					}
 			    }
 			    else
@@ -202,7 +210,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		
 		public void sendRequest(ReconHttpRequest request) {
 			if (-1 == client.sendRequest(request)) {
-				Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
+//				Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
 				System.out.println("HUD not connected - No Internet");
 //				result="NoInternet"; 
 //				textView.setText("result="+result);
