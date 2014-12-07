@@ -35,6 +35,14 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+        <activity
+            android:name=".HoursActivity"
+            android:label="@string/title_activity_hours" >
+        </activity>
+        <activity
+            android:name=".DaysActivity"
+            android:label="@string/title_activity_days" >
+        </activity>
     </application>
 
 </manifest>

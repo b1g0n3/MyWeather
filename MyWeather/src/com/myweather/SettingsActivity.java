@@ -5,30 +5,30 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.preference.PreferenceActivity;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class SettingsActivity extends Activity  {
 
 	TextView mCurrentTemp;
-    private TextView mStatus;
     public boolean first;
-	private TextView textView;
 	public static String result;
 	public double latitude,oldLatitude;
 	public double longitude,oldLongitude;
     public int testByte;
     String language,unit;
     String PreviousResult,temp;
-
+    private Switch buttonUnit;
+    private Switch buttonLanguage;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,17 +36,34 @@ public class SettingsActivity extends Activity  {
 		setContentView(R.layout.settings);
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy); 
+		buttonUnit = (Switch) findViewById(R.id.switchUnit);
+		buttonLanguage = (Switch) findViewById(R.id.switchLanguage);
 
 		/// Recuperation de la session precedente
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
     	PreviousResult = sharedpreferences.getString("PreviousResult", "");
-    	language = sharedpreferences.getString("Language", "En");
+    	language = sharedpreferences.getString("Language", "Eng");
     	unit = sharedpreferences.getString("Unit", "F");
     	temp = sharedpreferences.getString("latitude", "0");
     	oldLatitude = Double.valueOf(temp);
     	temp = sharedpreferences.getString("longitude", "0");
     	oldLongitude = Double.valueOf(temp);
-    	System.out.println("oldvalues:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit);
+    	if (unit.equals("F")) { buttonUnit.setChecked(true); } else { buttonUnit.setChecked(false); }
+    	if (language.equals("Eng")) { buttonLanguage.setChecked(true); } else { buttonLanguage.setChecked(false); }
+//    	System.out.println("(Settings onCreate) Je lis values:"+oldLatitude+" / "+oldLongitude+" />"+language+"</ "+unit);
+    	buttonUnit.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    	    if (isChecked) { unit="F"; } else { unit="C"; }
+//        	System.out.println("unit devient="+unit);
+        }
+    	});
+    	buttonLanguage.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+      	    if (isChecked) { language="Eng"; } else { language="Fra"; }
+//        	System.out.println("language devient="+language);
+        }
+    	});
+
 	}
 	
 	@Override 
@@ -55,25 +72,40 @@ public class SettingsActivity extends Activity  {
 	    switch (keyCode) {
 	        case KeyEvent.KEYCODE_DPAD_UP :
 	        { 
-	    		System.out.println("Keydown: settings ("+keyCode+")");	    		
-	    		System.out.println("je ressorts");
-	        	overridePendingTransition(R.anim.slideup_in, R.anim.slideup_out);
 	        	finish();
+	        	overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
 	        	break;
 	        }
 	        case KeyEvent.KEYCODE_DPAD_CENTER :
 	        {
 	        	break;
 	        }
+	        case KeyEvent.KEYCODE_BACK :
+	        {
+	        	finish();
+	        	overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
+	        	break;
+	        }
 	    }
 	    return super.onKeyDown(keyCode, event);
 	}
    
+	protected void onPause() {
+		super.onPause();
+		SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("latitude", String.valueOf(oldLatitude) );
+		editor.putString("longitude", String.valueOf(oldLongitude));
+		editor.putString("Language", String.valueOf(language) );
+		editor.putString("Unit", String.valueOf(unit));
+		editor.apply();
+//    	System.out.println("(Settings onDestroy) Jecris values:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit);
+	}
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		System.out.println("je passe par la");
-		overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
+    	overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
 	}
 	
     @Override
