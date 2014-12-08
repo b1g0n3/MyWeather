@@ -3,12 +3,12 @@
 
     <string name="app_name">MyWeather</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">MyWeather:Settings</string>
-    <string name="title_activity_settings">MyWeather:Settings</string>
+    <string name="action_settings">MyWeather : Settings</string>
+    <string name="title_activity_settings">MyWeather : Settings</string>
     <string name="title_activity_hours">MyWeather : Next Hours</string>
     <string name="title_activity_main">MyWeather : Now</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="title_activity_days">MyWeather:Next Days</string>
+    <string name="title_activity_days">MyWeather : Next Days</string>
 
 </resources>
