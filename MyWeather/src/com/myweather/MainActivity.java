@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -40,6 +41,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     private TextView mStatus;
     public boolean first;
 	private TextView textView, textcondition,temperature,textressentie;
+	private ImageView iconimage;
 	public static String result;
 	private static ReconOSHttpClient client;
 	public double latitude,oldLatitude;
@@ -57,10 +59,12 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		setContentView(R.layout.activity_main);
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy); 
-		textView = (TextView) findViewById(R.id.text_view);
+		textView = (TextView) findViewById(R.id.status);
 		textcondition = (TextView) findViewById(R.id.condition);
 		temperature = (TextView) findViewById(R.id.Temperature);
 		textressentie = (TextView) findViewById(R.id.textressentie);
+    	iconimage = (ImageView) findViewById(R.id.icon);
+		
 	    final Button button_refresh = (Button) findViewById(R.id.button_refresh);
 //    	doRefresh();
 	}
@@ -153,9 +157,16 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     		String [] f  = currently.get().getFieldsArray();
     		for(int i = 0; i<f.length;i++)
     			System.out.println(f[i]+": "+currently.get().getByKey(f[i]));
-    		textView.setText(currently.get().getByKey("icon"));
+    		String icon =  currently.get().getByKey("icon").replace("\"", "");
+    		String icon1 = "@drawable/"+icon.replace("-", "_");
+    		System.out.println("icon1="+icon1);
+    		Resources res = getResources();
+    		int resourceId = res.getIdentifier(
+    		   icon1, "drawable", getPackageName() );
+    		iconimage.setImageResource( resourceId );
     		setTitle("MyWeather : currently");
-    		textView.setText("lastCheck "+currently.get().getByKey("time"));
+
+//			textView.setText("lastCheck "+currently.get().getByKey("time"));
     		
     		if (unit=="F") {
     			temperature.setText(DoubleToF(currently.get().getByKey("temperature"))+"°");
@@ -167,7 +178,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     		} else { 
     			textressentie.setText("Feels like "+DoubleToC(currently.get().getByKey("apparentTemperature"))+"°");
     		}
-    		textcondition.setText(currently.get().getByKey("summary"));
+    		textcondition.setText(currently.get().getByKey("summary").replace("\"", ""));
     		
     	} else {
     		System.out.println("nothing to display or bad json...");
@@ -202,15 +213,43 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			    {
 			        latitude=loc.getLatitude();
 			        longitude=loc.getLongitude();
-					System.out.println("Lat:"+latitude+" / long:"+longitude);
+			    	//		        
+			    	//	remplacement de la localisation pour test	        
+			    	//		        
+			    	// alpe d'huez
+			    	//latitude=45.092624;
+			    	//longitude=6.068348;
+			        
+			        // Pic Blanc
+			        // latitude=45.125263;
+			        // longitude=6.127609;
+			    	
+			        //Ajaccio
+			        //latitude=41.919229;
+			        //longitude=8.738635;
+			        
+			        //Russie
+			        //latitude=46.192683;
+			        //longitude=48.205964;
+
+			        //bulgarie
+			        //latitude=49.168602;
+			        //longitude=25.351872;
+			        
+			        //alger
+			        //latitude=36.752887;
+			        //longitude=3.042048;
+			        
+			        System.out.println("Lat:"+latitude+" / long:"+longitude);
 					oldLatitude=latitude; oldLongitude=longitude;
 					System.out.println("Fetching data...");
 			        textView.setText("Fetching data...");
+			        
 					try {
 						URL url = new URL("https://api.forecast.io/forecast/28faca837266a521f823ab10d1a45050/"+latitude+","+longitude);
 						Map<String, List<String>> headers = new HashMap<String, List<String>>();			
 						byte[] body = "".getBytes();
-						sendRequest(new ReconHttpRequest("GET", url, null, null));
+						sendRequest(new ReconHttpRequest("GET", url, null , null));
 
 					} catch (MalformedURLException e) {
 						System.out.println("MalformedURLException...");
@@ -220,7 +259,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			    {
 			        System.out.println("No GPS Fix");
 					System.out.println("Displaying old data...");
-			        textView.setText("Displaying old data...");
+//			        textView.setText("Displaying old data...");
 					onDisplay(PreviousResult);
 			    }
 		}
@@ -249,7 +288,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			if (-1 == client.sendRequest(request)) {
 				System.out.println("HUD not connected - No Internet");
 				System.out.println("Displaying old data...");
-		        textView.setText("Displaying old data...");
+		        textView.setText("No Internet");
 				onDisplay(PreviousResult);
 			} else {
 				System.out.println("Request Sent");
@@ -270,7 +309,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 				editor.apply();
 				oldLatitude=latitude; oldLongitude=longitude;
 				System.out.println("Displaying data...");
-		        textView.setText("Displaying data...");
+//		        textView.setText("Displaying data...");
 				onDisplay(result);
 			}
 			

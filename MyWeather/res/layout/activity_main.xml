@@ -1,85 +1,104 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/Layout1"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="428dp"
+    android:layout_height="240dp"
     android:layout_gravity="fill_horizontal"
     android:background="#000000"
-    android:columnCount="4"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.myweather.MainActivity" >
 
-    <Button
-        android:id="@+id/button_refresh"
-        android:layout_width="wrap_content"
-        android:layout_height="24dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_gravity="left|bottom"
-        android:background="@drawable/refresh"
-        android:clickable="false"
-        android:linksClickable="false"
-        android:longClickable="false" />
-
-    <TextView
-        android:id="@+id/text_view"
-        android:layout_width="208dp"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/icon"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="left|bottom"
-        android:gravity="right"
-        android:paddingLeft="6dp"
-        android:text="TextView"
-        android:textColor="#ffffff"
-        android:textSize="12dp" />
-
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="false"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:paddingRight="10dp"
-        android:src="@drawable/icon29" />
-
-    <TextView
-        android:id="@+id/condition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/icon"
-        android:layout_centerInParent="true"
-        android:layout_gravity="top|center"
-        android:gravity="center_horizontal"
-        android:text="TextView"
-        android:textColor="#ffffff"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/Temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/icon"
-        android:text="64"
-        android:textColor="#ffffff"
-        android:textSize="64dp" />
-
-    <TextView
-        android:id="@+id/textressentie"
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/Temperature"
-        android:layout_centerVertical="true"
-        android:text="Feels like "
-        android:textColor="#ffffff" />
+        android:layout_height="182dp"
+        android:columnCount="3" >
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/Temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:textColor="@color/write"
+                android:textSize="64sp" />
+
+            <TextView
+                android:id="@+id/textressentie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/write" />
+
+            <TextView
+                android:id="@+id/condition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/write"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="center_vertical|center_horizontal|center"
+                android:paddingRight="10dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:layout_row="0"
+            android:orientation="vertical" >
+
+        </LinearLayout>
+
+    </GridLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom|left"
+            android:background="@drawable/refresh"
+            android:clickable="false"
+            android:linksClickable="false"
+            android:longClickable="false" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom|right"
+            android:gravity="bottom|right"
+            android:text="previous data"
+            android:textColor="@color/write"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>
