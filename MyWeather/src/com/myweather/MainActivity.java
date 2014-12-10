@@ -1,5 +1,6 @@
 package com.myweather;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -127,13 +128,14 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	protected void onResume() {
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
     	PreviousResult = sharedpreferences.getString("PreviousResult", "");
+    	PreviousResult = "";
     	language = sharedpreferences.getString("Language", "Eng");
     	unit = sharedpreferences.getString("Unit", "F");
     	temp = sharedpreferences.getString("latitude", "0");
     	oldLatitude = Double.valueOf(temp);
     	temp = sharedpreferences.getString("longitude", "0");
     	oldLongitude = Double.valueOf(temp);
-//    	System.out.println("(Main onResume) Je lis values:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit+" / >"+PreviousResult+"<");
+    	System.out.println("(Main onResume) Je lis values:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit+" / >"+PreviousResult+"<");
 	    LayoutInflater inflater = getLayoutInflater();
     	View layout = inflater.inflate(R.layout.toast,(ViewGroup) findViewById(R.id.toast_layout_root));
     	ImageView image = (ImageView) layout.findViewById(R.id.image);
@@ -159,7 +161,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     			System.out.println(f[i]+": "+currently.get().getByKey(f[i]));
     		String icon =  currently.get().getByKey("icon").replace("\"", "");
     		String icon1 = "@drawable/"+icon.replace("-", "_");
-    		System.out.println("icon1="+icon1);
+//    		System.out.println("icon1="+icon1);
     		Resources res = getResources();
     		int resourceId = res.getIdentifier(
     		   icon1, "drawable", getPackageName() );
@@ -181,6 +183,11 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     		textcondition.setText(currently.get().getByKey("summary").replace("\"", ""));
     		
     	} else {
+    		String icon1 = "@drawable/unknown";
+    		Resources res = getResources();
+    		int resourceId = res.getIdentifier(
+    		   icon1, "drawable", getPackageName() );
+    		iconimage.setImageResource( resourceId );
     		System.out.println("nothing to display or bad json...");
     		System.out.println("data="+data);    		
 	        textView.setText("nothing to display...");
@@ -248,7 +255,12 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 					try {
 						URL url = new URL("https://api.forecast.io/forecast/28faca837266a521f823ab10d1a45050/"+latitude+","+longitude);
 						Map<String, List<String>> headers = new HashMap<String, List<String>>();			
-						byte[] body = "".getBytes();
+						try {
+							byte[] body = "".getBytes("lang=fr");
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						sendRequest(new ReconHttpRequest("GET", url, null , null));
 
 					} catch (MalformedURLException e) {
@@ -258,8 +270,8 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			    else
 			    {
 			        System.out.println("No GPS Fix");
-					System.out.println("Displaying old data...");
-//			        textView.setText("Displaying old data...");
+//					System.out.println("Displaying old data...");
+			        textView.setText("No GPS Fix");
 					onDisplay(PreviousResult);
 			    }
 		}
