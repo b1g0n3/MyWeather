@@ -10,5 +10,14 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_days">MyWeather : Next Days</string>
-
+    <string name="feellike_en ">Feels like :</string>
+    <string name="feellike_fr ">Ressentie :</string>
+    <string name="pressure_en ">Pressure :</string>
+    <string name="pressure_fr ">Pression :</string>
+    <string name="wind_en ">Wind :</string>
+    <string name="wind_fr ">Vent :</string>
+    <string name="humid_en ">Humidity :</string>
+    <string name="humid_fr ">Humidité :</string>
+    <string name="tend_en ">Next 24H :</string>
+    <string name="tend_fr ">Tendance :</string>
 </resources>

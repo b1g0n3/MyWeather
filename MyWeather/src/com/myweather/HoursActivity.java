@@ -4,8 +4,15 @@ import java.util.ArrayList;
 
 import org.lucasr.twowayview.TwoWayView;
 
+import com.github.dvdme.ForecastIOLib.FIOCurrently;
+import com.github.dvdme.ForecastIOLib.FIOHourly;
+import com.github.dvdme.ForecastIOLib.ForecastIO;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -18,21 +25,52 @@ import android.widget.Toast;
 
 public class HoursActivity extends Activity {
 
+	String data,language,unit;
+	static String key = "28faca837266a521f823ab10d1a45050";
+	ArrayList<String> icons = new ArrayList<String>();
+	ArrayList<String> temperatures = new ArrayList<String>();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.activity_hours);
-
-		ArrayList<String> items = new ArrayList<String>();
-		items.add("Item 1");
-		items.add("Item 2");
-		items.add("Item 3");
-		items.add("Item 4");
+		/// Recuperation de la session precedente
+    	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
+    	data = sharedpreferences.getString("PreviousResult", "");
+    	language = sharedpreferences.getString("Language", "en");
+    	unit = sharedpreferences.getString("Unit", "F"); 	
+		if (data !=null & data!="") {
+    		ForecastIO fio = new ForecastIO(key);
+    		fio.getForecast(data);
+    		FIOHourly hourly = new FIOHourly(fio);
+    		new FIOHourly(fio);
+    		if(hourly.hours()<0)
+    	        System.out.println("No hourly data.");
+    	    else
+    	        System.out.println("\nHourly:\n");
+    	    //Print hourly data
+    		for(int i = 0; i<11; i++){
+    	        String [] h = hourly.getHour(i).getFieldsArray();
+    	        System.out.println("Hour #"+(i+1));
+    	        icons.add(hourly.getHour(i).icon());
+    	        temperatures.add(hourly.getHour(i).getByKey("temperature"));
+    	    }
+    		
+    	} else {
+    		String icon1 = "@drawable/unknown";
+    		Resources res = getResources();
+    		int resourceId = res.getIdentifier(
+    		   icon1, "drawable", getPackageName() );
+    		System.out.println("nothing to display or bad json...");
+    		System.out.println("data="+data);    		
+    	}
 		
-		ArrayAdapter<String> aItems = new ArrayAdapter<String>(this, R.layout.simple_list_item_1, items);
+		ArrayAdapter<String> icon = new ArrayAdapter<String>(this, R.layout.simple_list_item_1, icons );
+//		ArrayAdapter<String> temperature = new ArrayAdapter<String>(this, R.layout.simple_list_item_1, temperatures);
 		TwoWayView lvTest = (TwoWayView) findViewById(R.id.lvItems);
-		lvTest.setAdapter(aItems);
+		lvTest.setItemMargin(5);
+		lvTest.setAdapter(icon); 
+//		lvTest.setAdapter(temperature);
 	}
 
 	@Override 

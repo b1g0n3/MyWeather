@@ -1,16 +1,13 @@
 package com.myweather;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.myweather.MyListener;
 import com.github.dvdme.ForecastIOLib.FIOCurrently;
+import com.github.dvdme.ForecastIOLib.FIOHourly;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
 import com.reconinstruments.ReconSDK.*;
 import com.reconinstruments.webapi.IReconHttpCallback;
@@ -31,7 +28,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,19 +35,18 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements IReconDataReceiver { 
 	
 	TextView mCurrentTemp;
-    private TextView mStatus;
     public boolean first;
-	private TextView textView, textcondition,temperature,textressentie;
+	private TextView textView, textcondition,temperature,textressentie,textwind,textpress,texthumid,textozone,texttendance;
 	private ImageView iconimage;
 	public static String result;
 	private static ReconOSHttpClient client;
 	public double latitude,oldLatitude;
 	public double longitude,oldLongitude;
 	static String key = "28faca837266a521f823ab10d1a45050";
-    private MyListener mListener;
-    public int testByte;
-    String language,unit;
-    String PreviousResult,temp;
+    public int testByte,pass;
+    String language,unit,vitesse;
+    String PreviousResult,temp,statusline;
+	private String feel,press,wind,humid,un,tend;
     
     
 	@Override
@@ -64,10 +59,15 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		textcondition = (TextView) findViewById(R.id.condition);
 		temperature = (TextView) findViewById(R.id.Temperature);
 		textressentie = (TextView) findViewById(R.id.textressentie);
+		textwind = (TextView) findViewById(R.id.textwind);
+		textpress = (TextView) findViewById(R.id.textpress);
+		texthumid = (TextView) findViewById(R.id.texthumid);
+		textozone = (TextView) findViewById(R.id.textozone);
+		texttendance = (TextView) findViewById(R.id.texttendance);
     	iconimage = (ImageView) findViewById(R.id.icon);
-		
-	    final Button button_refresh = (Button) findViewById(R.id.button_refresh);
-//    	doRefresh();
+	    findViewById(R.id.button_refresh);
+	    statusline="(last source : ";
+	    //    	doRefresh();
 	}
 	
 	@Override 
@@ -99,28 +99,26 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 
 	@Override
 	protected void onPause() {
-		SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
+		SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putString("latitude", String.valueOf(oldLatitude) );
 		editor.putString("longitude", String.valueOf(oldLongitude));
 		editor.putString("Language", String.valueOf(language) );
 		editor.putString("Unit", String.valueOf(unit));
 		editor.apply();
-//    	System.out.println("(Main onPause) Jecris values:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit);
 		super.onPause();
 	}
 
 	
     @Override
 	protected void onDestroy() {
-		SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
+		SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putString("latitude", String.valueOf(latitude) );
 		editor.putString("longitude", String.valueOf(longitude));
 		editor.putString("Language", String.valueOf(language) );
 		editor.putString("Unit", String.valueOf(unit));
 		editor.apply();
-    	System.out.println("(Main onDestroy) Jecris values:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit);
     	super.onDestroy();
 	}
     
@@ -128,8 +126,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	protected void onResume() {
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
     	PreviousResult = sharedpreferences.getString("PreviousResult", "");
-    	PreviousResult = "";
-    	language = sharedpreferences.getString("Language", "Eng");
+    	language = sharedpreferences.getString("Language", "en");
     	unit = sharedpreferences.getString("Unit", "F");
     	temp = sharedpreferences.getString("latitude", "0");
     	oldLatitude = Double.valueOf(temp);
@@ -154,34 +151,47 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     		ForecastIO fio = new ForecastIO(key);
     		fio.getForecast(data);
     		FIOCurrently currently = new FIOCurrently(fio);
-    	    //Print currently data
-    		System.out.println("\nCurrently\n");
-    		String [] f  = currently.get().getFieldsArray();
-    		for(int i = 0; i<f.length;i++)
-    			System.out.println(f[i]+": "+currently.get().getByKey(f[i]));
+    		new FIOHourly(fio);
     		String icon =  currently.get().getByKey("icon").replace("\"", "");
     		String icon1 = "@drawable/"+icon.replace("-", "_");
-//    		System.out.println("icon1="+icon1);
     		Resources res = getResources();
     		int resourceId = res.getIdentifier(
     		   icon1, "drawable", getPackageName() );
     		iconimage.setImageResource( resourceId );
     		setTitle("MyWeather : currently");
-
-//			textView.setText("lastCheck "+currently.get().getByKey("time"));
+    		if (language=="en") {
+    			feel = getString(R.string.feellike_en);
+    			press = getString(R.string.pressure_en);
+    			wind = getString(R.string.wind_en);
+    			humid = getString(R.string.humid_en);
+    			vitesse = "mph";
+    			tend=getString(R.string.tend_en);
+    		} else {
+    			feel = getString(R.string.feellike_fr);
+    			press = getString(R.string.pressure_fr);
+    			wind = getString(R.string.wind_fr);
+    			humid = getString(R.string.humid_fr);
+    			vitesse = "kmh";
+    			tend=getString(R.string.tend_fr);
+    		}
     		
-    		if (unit=="F") {
-    			temperature.setText(DoubleToF(currently.get().getByKey("temperature"))+"°");
-    		} else { 
-    			temperature.setText(DoubleToC(currently.get().getByKey("temperature"))+"°");
-    		}
-    		if (unit=="F") {
-    			textressentie.setText("Feels like "+DoubleToF(currently.get().getByKey("apparentTemperature"))+"°"); 
-    		} else { 
-    			textressentie.setText("Feels like "+DoubleToC(currently.get().getByKey("apparentTemperature"))+"°");
-    		}
+    	    System.out.println("\nCurrently\n");
+    	    String [] f  = currently.get().getFieldsArray();
+    	    for(int i = 0; i<f.length;i++)
+    	        System.out.println(f[i]+": "+currently.get().getByKey(f[i]));
+    	    
+			String dir=headingToString2(Integer.valueOf(currently.get().getByKey("windBearing")));
+    		temperature.setText(DoubleToI(currently.get().getByKey("temperature"))+"°");
+    		textressentie.setText(feel+" "+DoubleToI(currently.get().getByKey("apparentTemperature"))+"°");
     		textcondition.setText(currently.get().getByKey("summary").replace("\"", ""));
-    		
+    		textpress.setText(press+" "+DoubleToI(currently.get().getByKey("pressure"))+" mb");    		
+    		textwind.setText(wind+" "+DoubleToI(currently.get().getByKey("windSpeed"))+" "+vitesse+" ("+dir+")");
+    		texthumid.setText(humid+" "+DoubleToP(currently.get().getByKey("humidity"))+"%");
+    		textozone.setText("Ozone : "+DoubleToI(currently.get().getByKey("ozone"))+"");
+    		textView.setText(statusline+currently.get().getByKey("time")+")");
+    		String substr=data.substring(data.indexOf("hourly\":{\"")+20);
+    		substr=substr.substring(0, substr.indexOf("\""));
+    		texttendance.setText(tend+" "+substr);
     	} else {
     		String icon1 = "@drawable/unknown";
     		Resources res = getResources();
@@ -200,80 +210,62 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		result="";
 		client = new ReconOSHttpClient(this, clientCallback);
 		Toast.makeText(this, "Refresh", Toast.LENGTH_SHORT).show();
+		pass=1;
 		ReconSDKManager mDataManager   = ReconSDKManager.Initialize(this);
 		mDataManager.receiveData(this, ReconEvent.TYPE_LOCATION);
+		mDataManager.unregisterListener(ReconEvent.TYPE_LOCATION);
 		textView.setText("Waiting for GPS fix...");
 		System.out.println("Waiting for GPS fix...");
 	}
 		
 		public void onReceiveCompleted(int status, ReconDataResult result)
 		{
+			if (pass==1) {
+				
 			    if (status != ReconSDKManager.STATUS_OK)
 			    {
 			        System.out.println("Communication Failure with Transcend Service");
 			        return;
 			    }
+			    pass++;
 			    ReconLocation rloc = (ReconLocation)result.arrItems.get(0);
 			    Location loc = rloc.GetLocation();
-			    Location prevloc = rloc.GetPreviousLocation();
+			    rloc.GetPreviousLocation();
 			    if (loc != ReconLocation.INVALID_LOCATION)
 			    {
 			        latitude=loc.getLatitude();
 			        longitude=loc.getLongitude();
+			        
+			        System.out.println("Lat trouvée:"+latitude+" / long:"+longitude);
+					oldLatitude=latitude; oldLongitude=longitude;
+					statusline="(last refresh:";
+			    } else {
+			    	statusline="No GPS. Previous location (last refresh:";
+			    	latitude=oldLatitude; longitude=oldLongitude;
 			    	//		        
 			    	//	remplacement de la localisation pour test	        
 			    	//		        
-			    	// alpe d'huez
-			    	//latitude=45.092624;
-			    	//longitude=6.068348;
-			        
-			        // Pic Blanc
-			        // latitude=45.125263;
-			        // longitude=6.127609;
-			    	
-			        //Ajaccio
-			        //latitude=41.919229;
-			        //longitude=8.738635;
-			        
-			        //Russie
-			        //latitude=46.192683;
-			        //longitude=48.205964;
+			    	//latitude=50.647392; longitude=3.130481; // my home
+			    	//latitude=45.092624; longitude=6.068348; // alpe d'huez
+			        //latitude=45.125263; longitude=6.127609; // Pic Blanc
+			        //latitude=41.919229; longitude=8.738635; //Ajaccio
+			        //latitude=46.192683; longitude=48.205964; //Russie
+			        //latitude=49.168602; longitude=25.351872; //bulgarie
+			        //latitude=36.752887; longitude=3.042048; //alger
 
-			        //bulgarie
-			        //latitude=49.168602;
-			        //longitude=25.351872;
-			        
-			        //alger
-			        //latitude=36.752887;
-			        //longitude=3.042048;
-			        
-			        System.out.println("Lat:"+latitude+" / long:"+longitude);
-					oldLatitude=latitude; oldLongitude=longitude;
-					System.out.println("Fetching data...");
-			        textView.setText("Fetching data...");
-			        
-					try {
-						URL url = new URL("https://api.forecast.io/forecast/28faca837266a521f823ab10d1a45050/"+latitude+","+longitude);
-						Map<String, List<String>> headers = new HashMap<String, List<String>>();			
-						try {
-							byte[] body = "".getBytes("lang=fr");
-						} catch (UnsupportedEncodingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						sendRequest(new ReconHttpRequest("GET", url, null , null));
+			    }	
+				System.out.println("Fetching data...");
+		        textView.setText("Fetching data...");
+				try {
+					if (unit=="F") { un = "us"; } else { un = "ca"; }
+					URL url = new URL("https://api.forecast.io/forecast/"+key+"/"+latitude+","+longitude+"?lang="+language+"&units="+un);
+					new HashMap<String, List<String>>();			
+					sendRequest(new ReconHttpRequest("GET", url, null , null));
 
-					} catch (MalformedURLException e) {
-						System.out.println("MalformedURLException...");
-					}
-			    }
-			    else
-			    {
-			        System.out.println("No GPS Fix");
-//					System.out.println("Displaying old data...");
-			        textView.setText("No GPS Fix");
-					onDisplay(PreviousResult);
-			    }
+				} catch (MalformedURLException e) {
+					System.out.println("MalformedURLException...");
+				}
+			}
 		}
 
 		@Override
@@ -282,14 +274,13 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			System.out.println("boucleX");
 		}
 		
-		public String DoubleToC(String sourceDouble) {
+		public String DoubleToP(String sourceDouble) {
     		DecimalFormat df = new DecimalFormat("#");    		
     		double db=Double.valueOf(sourceDouble);
- //   		double i = (db-32)/1.8;
-			return df.format((db-32)/1.8);
+			return df.format(db*100);
 		}
 
-		public String DoubleToF(String sourceDouble) {
+		public String DoubleToI(String sourceDouble) {
     		DecimalFormat df = new DecimalFormat("#");    		
     		double db=Double.valueOf(sourceDouble);
 			return df.format(db);
@@ -299,8 +290,8 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		public void sendRequest(ReconHttpRequest request) {
 			if (-1 == client.sendRequest(request)) {
 				System.out.println("HUD not connected - No Internet");
-				System.out.println("Displaying old data...");
 		        textView.setText("No Internet");
+		        statusline="No Internet (last data:";
 				onDisplay(PreviousResult);
 			} else {
 				System.out.println("Request Sent");
@@ -310,18 +301,15 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		private IReconHttpCallback clientCallback = new IReconHttpCallback() {
 			@Override
 			public void onReceive(int requestId, ReconHttpResponse response) {
-				System.out.println("Response ready...");
 				textView.setText("Data received...");
-				System.out.println("return to main...");
 				result=new String(response.getBody());
 				PreviousResult=result;
-				SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
+				SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
 				SharedPreferences.Editor editor = preferences.edit();
 				editor.putString("PreviousResult",PreviousResult);
 				editor.apply();
 				oldLatitude=latitude; oldLongitude=longitude;
 				System.out.println("Displaying data...");
-//		        textView.setText("Displaying data...");
 				onDisplay(result);
 			}
 			
@@ -331,5 +319,9 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			}
 		};
 
-		
+	    public static String headingToString2(double x)
+	    {
+	        String directions[] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
+	        return directions[ (int)Math.round((  ((double)x % 360) / 45)) ];
+	    }
 }

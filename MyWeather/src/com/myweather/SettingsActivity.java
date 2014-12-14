@@ -38,18 +38,16 @@ public class SettingsActivity extends Activity  {
 		StrictMode.setThreadPolicy(policy); 
 		buttonUnit = (Switch) findViewById(R.id.switchUnit);
 		buttonLanguage = (Switch) findViewById(R.id.switchLanguage);
-
-		/// Recuperation de la session precedente
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
-    	PreviousResult = sharedpreferences.getString("PreviousResult", "");
-    	language = sharedpreferences.getString("Language", "Eng");
+//    	PreviousResult = sharedpreferences.getString("PreviousResult", "");
+    	language = sharedpreferences.getString("Language", "en");
     	unit = sharedpreferences.getString("Unit", "F");
-    	temp = sharedpreferences.getString("latitude", "0");
-    	oldLatitude = Double.valueOf(temp);
-    	temp = sharedpreferences.getString("longitude", "0");
-    	oldLongitude = Double.valueOf(temp);
+//    	temp = sharedpreferences.getString("latitude", "0");
+//    	oldLatitude = Double.valueOf(temp);
+//    	temp = sharedpreferences.getString("longitude", "0");
+//    	oldLongitude = Double.valueOf(temp);
     	if (unit.equals("F")) { buttonUnit.setChecked(true); } else { buttonUnit.setChecked(false); }
-    	if (language.equals("Eng")) { buttonLanguage.setChecked(true); } else { buttonLanguage.setChecked(false); }
+    	if (language.equals("en")) { buttonLanguage.setChecked(true); } else { buttonLanguage.setChecked(false); }
 //    	System.out.println("(Settings onCreate) Je lis values:"+oldLatitude+" / "+oldLongitude+" />"+language+"</ "+unit);
     	buttonUnit.setOnCheckedChangeListener(new OnCheckedChangeListener() {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -59,7 +57,7 @@ public class SettingsActivity extends Activity  {
     	});
     	buttonLanguage.setOnCheckedChangeListener(new OnCheckedChangeListener() {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-      	    if (isChecked) { language="Eng"; } else { language="Fra"; }
+      	    if (isChecked) { language="en"; } else { language="fr"; }
 //        	System.out.println("language devient="+language);
         }
     	});
@@ -94,8 +92,8 @@ public class SettingsActivity extends Activity  {
 		super.onPause();
 		SharedPreferences preferences = getSharedPreferences("com.myweather", Context.MODE_WORLD_WRITEABLE);
 		SharedPreferences.Editor editor = preferences.edit();
-		editor.putString("latitude", String.valueOf(oldLatitude) );
-		editor.putString("longitude", String.valueOf(oldLongitude));
+//		editor.putString("latitude", String.valueOf(oldLatitude) );
+//		editor.putString("longitude", String.valueOf(oldLongitude));
 		editor.putString("Language", String.valueOf(language) );
 		editor.putString("Unit", String.valueOf(unit));
 		editor.apply();
