@@ -9,6 +9,7 @@ import com.github.dvdme.ForecastIOLib.FIOHourly;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class HoursActivity extends Activity {
+public class HoursActivity extends ListActivity {
 
 	String data,language,unit;
 	static String key = "28faca837266a521f823ab10d1a45050";
@@ -65,11 +66,12 @@ public class HoursActivity extends Activity {
     		System.out.println("data="+data);    		
     	}
 		
-		ArrayAdapter<String> icon = new ArrayAdapter<String>(this, R.layout.simple_list_item_1, icons );
+		ArrayAdapter<String> icon = new ArrayAdapter<String>(this, R.layout.complex_list_item_1, R.id.temptext, temperatures );
+		setListAdapter(icon);
 //		ArrayAdapter<String> temperature = new ArrayAdapter<String>(this, R.layout.simple_list_item_1, temperatures);
-		TwoWayView lvTest = (TwoWayView) findViewById(R.id.lvItems);
-		lvTest.setItemMargin(5);
-		lvTest.setAdapter(icon); 
+//		TwoWayView lvTest = (TwoWayView) findViewById(R.id.lvItems);
+//		lvTest.setItemMargin(5);
+//		lvTest.setAdapter(icon); 
 //		lvTest.setAdapter(temperature);
 	}
 

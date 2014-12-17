@@ -39,9 +39,8 @@ public class CustomListAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(R.layout.activity_hours, null);
 			holder = new ViewHolder();
-			holder.temperatureView = (TextView) convertView.findViewById(R.id.temperature);
-			holder.iconView = (TextView) convertView.findViewById(R.id.icon);
-			holder.dateView = (TextView) convertView.findViewById(R.id.date);
+			holder.temperatureView = (TextView) convertView.findViewById(R.id.temptext);
+//			holder.iconView = (ImageView) convertView.findViewById(R.id.icon);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
