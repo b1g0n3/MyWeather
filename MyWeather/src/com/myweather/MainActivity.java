@@ -245,9 +245,9 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			    	//		        
 			    	//	remplacement de la localisation pour test	        
 			    	//		        
-			    	//latitude=50.647392; longitude=3.130481; // my home
+			    	latitude=50.647392; longitude=3.130481; // my home
 			    	//latitude=45.092624; longitude=6.068348; // alpe d'huez
-			        latitude=45.125263; longitude=6.127609; // Pic Blanc
+			        //latitude=45.125263; longitude=6.127609; // Pic Blanc
 			        //latitude=41.919229; longitude=8.738635; //Ajaccio
 			        //latitude=46.192683; longitude=48.205964; //Russie
 			        //latitude=49.168602; longitude=25.351872; //bulgarie

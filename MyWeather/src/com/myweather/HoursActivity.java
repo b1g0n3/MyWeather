@@ -66,13 +66,7 @@ public class HoursActivity extends ListActivity {
     		System.out.println("data="+data);    		
     	}
 		
-		ArrayAdapter<String> icon = new ArrayAdapter<String>(this, R.layout.complex_list_item_1, R.id.temptext, temperatures );
-		setListAdapter(icon);
-//		ArrayAdapter<String> temperature = new ArrayAdapter<String>(this, R.layout.simple_list_item_1, temperatures);
-//		TwoWayView lvTest = (TwoWayView) findViewById(R.id.lvItems);
-//		lvTest.setItemMargin(5);
-//		lvTest.setAdapter(icon); 
-//		lvTest.setAdapter(temperature);
+
 	}
 
 	@Override 
