@@ -55,25 +55,19 @@ public class HoursActivity extends Activity {
 		fio.getForecast(data);
 		FIOHourly hourly = new FIOHourly(fio);
 		new FIOHourly(fio);
-		Weather weather_data[];
-		weather_data[1] = Weather("",R.drawable.partly_cloudy_day, "","","");
-    	Weather weather_data[] = new Weather[]
-    		{
+		Weather weather_data[] = new Weather("",R.drawable.partly_cloudy_day, "","","");
+		weather_data[1] = new Weather("",R.drawable.partly_cloudy_day, "","","");
+		weather_data[2] = new Weather("",R.drawable.partly_cloudy_day, "","","");
+		weather_data[3] = new Weather("",R.drawable.partly_cloudy_day, "","","");
 //	    		for(int i = 0; i<11; i++){
 //    			String [] h = hourly.getHour(i).getFieldsArray();
 //    			System.out.println("Hour #"+(i+1));
 //    			icons.add(hourly.getHour(i).icon());
 //    			temperatures.add(hourly.getHour(i).getByKey("temperature"));
         		
-                new Weather("",R.drawable.partly_cloudy_day, "","",""),
-                new Weather("",R.drawable.partly_cloudy_day, "","",""),
-                new Weather("",R.drawable.partly_cloudy_day, "","",""),
-                new Weather("",R.drawable.partly_cloudy_day, "","",""),
-                new Weather("",R.drawable.partly_cloudy_day, "","",""),
-                new Weather("",R.drawable.partly_cloudy_day, "","",""),
 //        		}
 
-    		};
+//    		};
 
 //    		ForecastIO fio = new ForecastIO(key);
 //    		fio.getForecast(data);
