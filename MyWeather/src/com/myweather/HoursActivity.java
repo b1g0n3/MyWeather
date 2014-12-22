@@ -2,6 +2,10 @@ package com.myweather;
 
 import java.util.ArrayList;
 
+// import org.lucasr.twowayview.TwoWayView;
+
+
+
 import org.lucasr.twowayview.TwoWayView;
 
 import com.github.dvdme.ForecastIOLib.FIOCurrently;
@@ -22,14 +26,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
-public class HoursActivity extends ListActivity {
+import com.myweather.WeatherAdapter;
+import com.myweather.Weather;
+
+public class HoursActivity extends Activity {
 
 	String data,language,unit;
 	static String key = "28faca837266a521f823ab10d1a45050";
 	ArrayList<String> icons = new ArrayList<String>();
 	ArrayList<String> temperatures = new ArrayList<String>();
+    private ListView listView1;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,35 +49,52 @@ public class HoursActivity extends ListActivity {
     	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
     	data = sharedpreferences.getString("PreviousResult", "");
     	language = sharedpreferences.getString("Language", "en");
-    	unit = sharedpreferences.getString("Unit", "F"); 	
-		if (data !=null & data!="") {
-    		ForecastIO fio = new ForecastIO(key);
-    		fio.getForecast(data);
-    		FIOHourly hourly = new FIOHourly(fio);
-    		new FIOHourly(fio);
-    		if(hourly.hours()<0)
-    	        System.out.println("No hourly data.");
-    	    else
-    	        System.out.println("\nHourly:\n");
-    	    //Print hourly data
-    		for(int i = 0; i<11; i++){
-    	        String [] h = hourly.getHour(i).getFieldsArray();
-    	        System.out.println("Hour #"+(i+1));
-    	        icons.add(hourly.getHour(i).icon());
-    	        temperatures.add(hourly.getHour(i).getByKey("temperature"));
-    	    }
-    		
-    	} else {
-    		String icon1 = "@drawable/unknown";
-    		Resources res = getResources();
-    		int resourceId = res.getIdentifier(
-    		   icon1, "drawable", getPackageName() );
-    		System.out.println("nothing to display or bad json...");
-    		System.out.println("data="+data);    		
-    	}
-		
+    	unit = sharedpreferences.getString("Unit", "F"); 
+    	System.out.println("get preferences..");
+		ForecastIO fio = new ForecastIO(key);
+		fio.getForecast(data);
+		FIOHourly hourly = new FIOHourly(fio);
+		new FIOHourly(fio);
+    	Weather weather_data[] = new Weather[]
+    		{
+//	    		for(int i = 0; i<11; i++){
+//    			String [] h = hourly.getHour(i).getFieldsArray();
+//    			System.out.println("Hour #"+(i+1));
+//    			icons.add(hourly.getHour(i).icon());
+//    			temperatures.add(hourly.getHour(i).getByKey("temperature"));
+        		
+                new Weather("",R.drawable.partly_cloudy_day, "","",""),
+                new Weather("",R.drawable.partly_cloudy_day, "","",""),
+                new Weather("",R.drawable.partly_cloudy_day, "","",""),
+                new Weather("",R.drawable.partly_cloudy_day, "","",""),
+                new Weather("",R.drawable.partly_cloudy_day, "","",""),
+                new Weather("",R.drawable.partly_cloudy_day, "","",""),
+//        		}
 
-	}
+    		};
+
+//    		ForecastIO fio = new ForecastIO(key);
+//    		fio.getForecast(data);
+//    		FIOHourly hourly = new FIOHourly(fio);
+//    		new FIOHourly(fio);
+//    		if(hourly.hours()<0)
+//    	        System.out.println("No hourly data.");
+//    	    else
+//    	        System.out.println("\nHourly:\n");
+    	    //Print hourly data
+//	    		for(int i = 0; i<11; i++){
+//	    			String [] h = hourly.getHour(i).getFieldsArray();
+//	    			System.out.println("Hour #"+(i+1));
+//	    			icons.add(hourly.getHour(i).icon());
+//	    			temperatures.add(hourly.getHour(i).getByKey("temperature"));
+//	    		}
+    		
+    	System.out.println("get weather content..");
+        WeatherAdapter adapter = new WeatherAdapter(this, R.layout.listview_item_row, weather_data);
+        TwoWayView listView1 = (TwoWayView) findViewById(R.id.lvItems);
+        View header = (View)getLayoutInflater().inflate(R.layout.listview_header_row, null);
+        listView1.setAdapter(adapter);
+	}		
 
 	@Override 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
