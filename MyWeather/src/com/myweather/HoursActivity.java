@@ -55,6 +55,8 @@ public class HoursActivity extends Activity {
 		fio.getForecast(data);
 		FIOHourly hourly = new FIOHourly(fio);
 		new FIOHourly(fio);
+		Weather weather_data[];
+		weather_data[1] = Weather("",R.drawable.partly_cloudy_day, "","","");
     	Weather weather_data[] = new Weather[]
     		{
 //	    		for(int i = 0; i<11; i++){
