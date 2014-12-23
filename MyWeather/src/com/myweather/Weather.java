@@ -9,8 +9,8 @@ public class Weather {
     
     public Weather(String time, int icon, String temperature, String precipitation, String wind) {
         super();
-        this.icon = icon;
         this.time = time;
+        this.icon = icon;
         this.temperature = temperature;
         this.precipitation = precipitation;
         this.wind = wind;

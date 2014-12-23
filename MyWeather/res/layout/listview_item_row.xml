@@ -4,21 +4,42 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-     <ImageView
-         android:id="@+id/imgIcon"
-         android:layout_width="64dp"
-         android:layout_height="64dp"
-         android:layout_alignParentBottom="true"
-         android:layout_alignParentTop="true"
-         android:gravity="center_vertical" />
-        
-     <TextView android:id="@+id/txtTitle"
+     <TextView
+         android:id="@+id/txtTime"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_gravity="center"
+         android:text="01:00"
+         android:textColor="@color/write"
+         android:textSize="24sp" />
+    
+    <ImageView
+        android:id="@+id/imgIcon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:src="@drawable/partly_cloudy_day" />
+
+    <TextView
+        android:id="@+id/txtTemperature"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="11°"
+        android:textColor="@color/write"
+        android:textSize="24dp" />
+
+    <TextView android:id="@+id/txtPrecipitation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textSize="12sp"
-        android:textColor="#000000" />
-        
+        android:textColor="@color/write" />
+    
+    <TextView
+        android:id="@+id/txtWind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/write"
+        android:textSize="12sp" />
+    
 </LinearLayout>

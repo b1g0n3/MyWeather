@@ -1,11 +1,17 @@
 package com.myweather;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+
+
+
+
+
+
+
 // import org.lucasr.twowayview.TwoWayView;
-
-
-
 import org.lucasr.twowayview.TwoWayView;
 
 import com.github.dvdme.ForecastIOLib.FIOCurrently;
@@ -36,9 +42,8 @@ public class HoursActivity extends Activity {
 
 	String data,language,unit;
 	static String key = "28faca837266a521f823ab10d1a45050";
-	ArrayList<String> icons = new ArrayList<String>();
-	ArrayList<String> temperatures = new ArrayList<String>();
     private ListView listView1;
+    String icon,time,temperature,precipitation,wind,vitesse;
 
 	
 	@Override
@@ -55,40 +60,28 @@ public class HoursActivity extends Activity {
 		fio.getForecast(data);
 		FIOHourly hourly = new FIOHourly(fio);
 		new FIOHourly(fio);
-		Weather weather_data[] = new Weather("",R.drawable.partly_cloudy_day, "","","");
-		weather_data[1] = new Weather("",R.drawable.partly_cloudy_day, "","","");
-		weather_data[2] = new Weather("",R.drawable.partly_cloudy_day, "","","");
-		weather_data[3] = new Weather("",R.drawable.partly_cloudy_day, "","","");
-//	    		for(int i = 0; i<11; i++){
-//    			String [] h = hourly.getHour(i).getFieldsArray();
-//    			System.out.println("Hour #"+(i+1));
-//    			icons.add(hourly.getHour(i).icon());
-//    			temperatures.add(hourly.getHour(i).getByKey("temperature"));
-        		
-//        		}
-
-//    		};
-
-//    		ForecastIO fio = new ForecastIO(key);
-//    		fio.getForecast(data);
-//    		FIOHourly hourly = new FIOHourly(fio);
-//    		new FIOHourly(fio);
-//    		if(hourly.hours()<0)
-//    	        System.out.println("No hourly data.");
-//    	    else
-//    	        System.out.println("\nHourly:\n");
-    	    //Print hourly data
-//	    		for(int i = 0; i<11; i++){
-//	    			String [] h = hourly.getHour(i).getFieldsArray();
-//	    			System.out.println("Hour #"+(i+1));
-//	    			icons.add(hourly.getHour(i).icon());
-//	    			temperatures.add(hourly.getHour(i).getByKey("temperature"));
-//	    		}
-    		
+		if (language=="en") vitesse = "mph"; else vitesse = "kmh";
+		Weather weather_data[] = new Weather[11] ;
+		for(int i = 0; i<11; i++){
+			String [] h = hourly.getHour(i).getFieldsArray();
+    		time = hourly.getHour(i).getByKey("time");
+			String substr=time.substring(time.indexOf(" "));
+    		time=substr.substring(1, 6);
+    		//System.out.println("time: >"+substr+"<");
+			icon =  hourly.getHour(i).icon().replace("\"", "");
+    		String icon1 = "@drawable/"+icon.replace("-", "_");
+			Resources res = getResources();
+    		int icon = res.getIdentifier(icon1, "drawable", getPackageName() );
+			temperature = DoubleToI(hourly.getHour(i).getByKey("temperature"))+"°";
+			precipitation = (hourly.getHour(i).getByKey("precipProbability"));
+			String dir=headingToString2(Integer.valueOf(hourly.getHour(i).getByKey("windBearing")));
+			wind = DoubleToI(hourly.getHour(i).getByKey("windSpeed"))+" "+vitesse+" ("+dir+")";
+			System.out.println("i="+i);
+			weather_data[i] = new Weather(time,icon,temperature,precipitation,wind);
+		}
     	System.out.println("get weather content..");
         WeatherAdapter adapter = new WeatherAdapter(this, R.layout.listview_item_row, weather_data);
         TwoWayView listView1 = (TwoWayView) findViewById(R.id.lvItems);
-        View header = (View)getLayoutInflater().inflate(R.layout.listview_header_row, null);
         listView1.setAdapter(adapter);
 	}		
 
@@ -149,5 +142,18 @@ public class HoursActivity extends Activity {
 		overridePendingTransition(R.anim.slideup_in, R.anim.slideup_out);
 
 	}
+	
+	public String DoubleToI(String sourceDouble) {
+		DecimalFormat df = new DecimalFormat("#");    		
+		double db=Double.valueOf(sourceDouble);
+		return df.format(db);
+	}
+
+	public static String headingToString2(double x)
+    {
+        String directions[] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
+        return directions[ (int)Math.round((  ((double)x % 360) / 45)) ];
+    }
+
 
 }

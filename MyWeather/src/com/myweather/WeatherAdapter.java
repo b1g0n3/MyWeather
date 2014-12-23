@@ -1,13 +1,17 @@
 package com.myweather;
 
+import java.text.DecimalFormat;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.*;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 
 public class WeatherAdapter extends ArrayAdapter<Weather>{
 
@@ -30,29 +34,37 @@ public class WeatherAdapter extends ArrayAdapter<Weather>{
         if(row == null)
         {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-            row = inflater.inflate(layoutResourceId, parent, false);
-            
+            row = inflater.inflate(layoutResourceId, parent, false);            
             holder = new WeatherHolder();
+            holder.txtTime = (TextView)row.findViewById(R.id.txtTime);
             holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
-            holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
-            
+            holder.txtTemperature = (TextView)row.findViewById(R.id.txtTemperature);
+            holder.txtPrecipitation = (TextView)row.findViewById(R.id.txtPrecipitation);
+            holder.txtWind = (TextView)row.findViewById(R.id.txtWind);
             row.setTag(holder);
         }
         else
         {
             holder = (WeatherHolder)row.getTag();
-        }
-        
+        }        
         Weather weather = data[position];
-        holder.txtTitle.setText(weather.time);
+        holder.txtTime.setText(weather.time);
         holder.imgIcon.setImageResource(weather.icon);
-        
+        holder.txtTemperature.setText(weather.temperature);
+        holder.txtPrecipitation.setText(weather.precipitation);
+        holder.txtWind.setText(weather.wind);
         return row;
     }
     
-    static class WeatherHolder
+
+	static class WeatherHolder
     {
+    	TextView txtTime;
         ImageView imgIcon;
-        TextView txtTitle;
+        TextView txtTemperature;
+        TextView txtPrecipitation;
+        TextView txtWind;
     }
+	
+
 }
