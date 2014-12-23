@@ -28,7 +28,6 @@
                 android:id="@+id/Temperature"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="top"
                 android:textColor="@color/write"
                 android:textSize="64sp" />
 
@@ -118,7 +117,7 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="24dp"
         android:orientation="horizontal" >
 
         <Button
@@ -131,15 +130,23 @@
             android:linksClickable="false"
             android:longClickable="false" />
 
-        <TextView
-            android:id="@+id/status"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:gravity="bottom|right"
-            android:text="previous data"
-            android:textColor="@color/write"
-            android:textSize="12sp" />
+            android:layout_height="26dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:layout_gravity="right"
+                android:gravity="right"
+                android:text="previous data"
+                android:textColor="@color/write"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

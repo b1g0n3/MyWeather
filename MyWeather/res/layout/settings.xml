@@ -87,7 +87,26 @@
         android:layout_height="wrap_content"
         android:gravity="bottom|center"
         android:orientation="vertical"
-        android:paddingTop="70dp" >
+        android:paddingTop="30dp" >
+
+        <ImageView
+            android:id="@+id/icon2"
+            android:layout_width="100dp"
+            android:layout_height="1dp"
+            android:background="@color/write" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:text="MyWeather 1.0" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="contact/support:longin.francois@gmail.com" />
 
         <TextView
             android:id="@+id/textView2"

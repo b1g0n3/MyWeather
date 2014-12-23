@@ -12,7 +12,9 @@ import com.github.dvdme.ForecastIOLib.FIOHourly;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -53,9 +55,6 @@ public class HoursActivity extends Activity {
 		Weather weather_data[] = new Weather[hourly.hours()] ;
 		for(int i = 0; i<hourly.hours() ; i++){
     		time = hourly.getHour(i).getByKey("time");
-//			String substr=time.substring(time.indexOf(" "));
-//    		time=substr.substring(1, 6);
-//    		time = daily.getDay(i).getByKey("time");
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 			Date date; double date1=0;
 			try {
@@ -106,6 +105,7 @@ public class HoursActivity extends Activity {
 	        {
 	        	break;
 	        }
+
 	        case KeyEvent.KEYCODE_BACK :
 	        {
 	        	finish();

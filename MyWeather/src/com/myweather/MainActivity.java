@@ -18,7 +18,9 @@ import com.reconinstruments.webapi.ReconHttpResponse;
 import com.reconinstruments.webapi.ReconOSHttpClient;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -58,8 +60,6 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		TimeZone tz = TimeZone.getDefault();
-		System.out.println("TimeZone   "+tz.getDisplayName(false, TimeZone.SHORT)+" Timezon id :: " +tz.getID());
-		System.out.println(TimeZone.getDefault());
 		setContentView(R.layout.activity_main);
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy); 
@@ -105,6 +105,22 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		        	refreshInProgress=true;
 		        	doRefresh();
 	        	}
+	        	break;
+	        }
+	        case KeyEvent.KEYCODE_BACK :
+	        {
+    	        new AlertDialog.Builder(this)
+    	        .setIcon(android.R.drawable.ic_dialog_alert)
+    	        .setMessage(R.string.really_quit)
+    	        .setPositiveButton(R.string.no, null)
+    	        .setNegativeButton(R.string.yes, new DialogInterface.OnClickListener() {
+    	            @Override
+    	            public void onClick(DialogInterface dialog, int which) {
+    	                //Stop the activity
+    	            	MainActivity.this.finish();    
+    	            }
+    	        })
+    	        .show();
 	        	break;
 	        }
 	    }

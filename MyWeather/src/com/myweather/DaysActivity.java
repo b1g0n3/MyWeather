@@ -12,7 +12,9 @@ import com.github.dvdme.ForecastIOLib.FIODaily;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -50,13 +52,6 @@ public class DaysActivity extends Activity {
 		fio.getForecast(data);
 		FIODaily daily = new FIODaily(fio);
 		new FIODaily(fio);
-		for(int i = 0; i<daily.days(); i++){
-	        String [] h = daily.getDay(i).getFieldsArray();
-	        System.out.println("Day #"+(i+1));
-	        for(int j=0; j<h.length; j++)
-	            System.out.println(h[j]+": "+daily.getDay(i).getByKey(h[j]));
-	        System.out.println("\n");
-	    }
 		if (language=="en") vitesse = "mph"; else vitesse = "kmh";
 		Weather weather_data[] = new Weather[daily.days()] ;
 		for(int i = 0; i<daily.days(); i++){
@@ -104,6 +99,7 @@ public class DaysActivity extends Activity {
 	        {
 	        	break;
 	        }
+
 	        case KeyEvent.KEYCODE_BACK :
 	        {
 	        	finish();
