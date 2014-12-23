@@ -1,25 +1,17 @@
 package com.myweather;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
-
-
-
-
-
-
-
-// import org.lucasr.twowayview.TwoWayView;
 import org.lucasr.twowayview.TwoWayView;
 
-import com.github.dvdme.ForecastIOLib.FIOCurrently;
 import com.github.dvdme.ForecastIOLib.FIOHourly;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,9 +22,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.myweather.WeatherAdapter;
@@ -42,7 +32,6 @@ public class HoursActivity extends Activity {
 
 	String data,language,unit;
 	static String key = "28faca837266a521f823ab10d1a45050";
-    private ListView listView1;
     String icon,time,temperature,precipitation,wind,vitesse;
 
 	
@@ -61,33 +50,45 @@ public class HoursActivity extends Activity {
 		FIOHourly hourly = new FIOHourly(fio);
 		new FIOHourly(fio);
 		if (language=="en") vitesse = "mph"; else vitesse = "kmh";
-		Weather weather_data[] = new Weather[11] ;
-		for(int i = 0; i<11; i++){
-			String [] h = hourly.getHour(i).getFieldsArray();
+		Weather weather_data[] = new Weather[hourly.hours()] ;
+		for(int i = 0; i<hourly.hours() ; i++){
     		time = hourly.getHour(i).getByKey("time");
-			String substr=time.substring(time.indexOf(" "));
-    		time=substr.substring(1, 6);
-    		//System.out.println("time: >"+substr+"<");
+//			String substr=time.substring(time.indexOf(" "));
+//    		time=substr.substring(1, 6);
+//    		time = daily.getDay(i).getByKey("time");
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+			Date date; double date1=0;
+			try {
+				date = (Date)formatter.parse(time);
+				date1 = (date.getTime()/1000)+3600;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			Date date2 = new Date((long) (date1*1000));
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+//			sdf.setTimeZone(TimeZone.getTimeZone("CET"));
+			sdf.setTimeZone(TimeZone.getDefault());
+			time = sdf.format(date2);
+
 			icon =  hourly.getHour(i).icon().replace("\"", "");
     		String icon1 = "@drawable/"+icon.replace("-", "_");
 			Resources res = getResources();
     		int icon = res.getIdentifier(icon1, "drawable", getPackageName() );
 			temperature = DoubleToI(hourly.getHour(i).getByKey("temperature"))+"°";
-			precipitation = (hourly.getHour(i).getByKey("precipProbability"));
 			String dir=headingToString2(Integer.valueOf(hourly.getHour(i).getByKey("windBearing")));
-			wind = DoubleToI(hourly.getHour(i).getByKey("windSpeed"))+" "+vitesse+" ("+dir+")";
-			System.out.println("i="+i);
-			weather_data[i] = new Weather(time,icon,temperature,precipitation,wind);
+			wind = DoubleToI(hourly.getHour(i).getByKey("windSpeed"))+" "+vitesse;//+"\n"+dir;
+			weather_data[i] = new Weather(time,icon,temperature,wind,dir);
 		}
     	System.out.println("get weather content..");
         WeatherAdapter adapter = new WeatherAdapter(this, R.layout.listview_item_row, weather_data);
         TwoWayView listView1 = (TwoWayView) findViewById(R.id.lvItems);
+        listView1.setItemMargin(1);
         listView1.setAdapter(adapter);
 	}		
 
 	@Override 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		System.out.println("Keydown: ("+keyCode+")");
 	    switch (keyCode) {
 	        case KeyEvent.KEYCODE_DPAD_DOWN :
 	        { 
@@ -154,6 +155,5 @@ public class HoursActivity extends Activity {
         String directions[] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
         return directions[ (int)Math.round((  ((double)x % 360) / 45)) ];
     }
-
 
 }

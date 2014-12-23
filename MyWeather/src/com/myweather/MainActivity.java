@@ -6,6 +6,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
+
 import com.github.dvdme.ForecastIOLib.FIOCurrently;
 import com.github.dvdme.ForecastIOLib.FIOHourly;
 import com.github.dvdme.ForecastIOLib.ForecastIO;
@@ -28,6 +30,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,12 +49,17 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     public int testByte,pass;
     String language,unit,vitesse;
     String PreviousResult,temp,statusline;
+    boolean UpOption,refreshInProgress;
 	private String feel,press,wind,humid,un,tend;
+	Button button_refresh;
     
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		TimeZone tz = TimeZone.getDefault();
+		System.out.println("TimeZone   "+tz.getDisplayName(false, TimeZone.SHORT)+" Timezon id :: " +tz.getID());
+		System.out.println(TimeZone.getDefault());
 		setContentView(R.layout.activity_main);
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy); 
@@ -65,9 +73,9 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 		textozone = (TextView) findViewById(R.id.textozone);
 		texttendance = (TextView) findViewById(R.id.texttendance);
     	iconimage = (ImageView) findViewById(R.id.icon);
-	    findViewById(R.id.button_refresh);
+	    button_refresh = (Button) findViewById(R.id.button_refresh);
 	    statusline="(last source : ";
-	    //    	doRefresh();
+	    UpOption = false;
 	}
 	
 	@Override 
@@ -83,14 +91,20 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 
 	        case KeyEvent.KEYCODE_DPAD_UP :
 	        {
+	        	if (UpOption) {
 	        	startActivity(new Intent(MainActivity.this, HoursActivity.class));
 	        	overridePendingTransition(R.anim.slidedown_in, R.anim.slidedown_out);
+	        	}
 	        	break;
 	        }
 
 	        case KeyEvent.KEYCODE_DPAD_CENTER :
 	        {
-	        	doRefresh();
+	        	if (!refreshInProgress) {
+		        	button_refresh.setVisibility(View.INVISIBLE);
+		        	refreshInProgress=true;
+		        	doRefresh();
+	        	}
 	        	break;
 	        }
 	    }
@@ -132,7 +146,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     	oldLatitude = Double.valueOf(temp);
     	temp = sharedpreferences.getString("longitude", "0");
     	oldLongitude = Double.valueOf(temp);
-    	System.out.println("(Main onResume) Je lis values:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit+" / >"+PreviousResult+"<");
+//    	System.out.println("(Main onResume) Je lis values:"+oldLatitude+" / "+oldLongitude+" / "+language+" / "+unit+" / >"+PreviousResult+"<");
 	    LayoutInflater inflater = getLayoutInflater();
     	View layout = inflater.inflate(R.layout.toast,(ViewGroup) findViewById(R.id.toast_layout_root));
     	ImageView image = (ImageView) layout.findViewById(R.id.image);
@@ -148,6 +162,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     
     private void onDisplay(String data) {
     	if (data !=null & data!="") {
+    		UpOption=true;
     		ForecastIO fio = new ForecastIO(key);
     		fio.getForecast(data);
     		FIOCurrently currently = new FIOCurrently(fio);
@@ -159,7 +174,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     		   icon1, "drawable", getPackageName() );
     		iconimage.setImageResource( resourceId );
     		setTitle("MyWeather : currently");
-    		if (language=="en") {
+    		if (language.equals("en")) {
     			feel = getString(R.string.feellike_en);
     			press = getString(R.string.pressure_en);
     			wind = getString(R.string.wind_en);
@@ -175,11 +190,7 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     			tend=getString(R.string.tend_fr);
     		}
     		
-    	    System.out.println("\nCurrently\n");
     	    String [] f  = currently.get().getFieldsArray();
-    	    for(int i = 0; i<f.length;i++)
-    	        System.out.println(f[i]+": "+currently.get().getByKey(f[i]));
-    	    
 			String dir=headingToString2(Integer.valueOf(currently.get().getByKey("windBearing")));
     		temperature.setText(DoubleToI(currently.get().getByKey("temperature"))+"°");
     		textressentie.setText(feel+" "+DoubleToI(currently.get().getByKey("apparentTemperature"))+"°");
@@ -192,6 +203,8 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     		String substr=data.substring(data.indexOf("hourly\":{\"")+20);
     		substr=substr.substring(0, substr.indexOf("\""));
     		texttendance.setText(tend+" "+substr);
+    		button_refresh.setVisibility(View.VISIBLE);
+    		refreshInProgress=false;
     	} else {
     		String icon1 = "@drawable/unknown";
     		Resources res = getResources();
@@ -199,8 +212,11 @@ public class MainActivity extends Activity implements IReconDataReceiver {
     		   icon1, "drawable", getPackageName() );
     		iconimage.setImageResource( resourceId );
     		System.out.println("nothing to display or bad json...");
-    		System.out.println("data="+data);    		
+    		System.out.println("data="+data);
+    		UpOption=false;
 	        textView.setText("nothing to display...");
+	        button_refresh.setVisibility(View.VISIBLE);
+	        refreshInProgress=false;
     	}
     }
     
@@ -253,14 +269,14 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			        //latitude=49.168602; longitude=25.351872; //bulgarie
 			        //latitude=36.752887; longitude=3.042048; //alger
 
-			    }	
+			    }
 				System.out.println("Fetching data...");
 		        textView.setText("Fetching data...");
 				try {
-					if (unit=="F") { un = "us"; } else { un = "ca"; }
+					if (unit.equals("F")) { un = "us"; } else { un = "ca"; }
 					URL url = new URL("https://api.forecast.io/forecast/"+key+"/"+latitude+","+longitude+"?lang="+language+"&units="+un);
 					new HashMap<String, List<String>>();			
-					sendRequest(new ReconHttpRequest("GET", url, null , null));
+					sendRequest(new ReconHttpRequest("GET", url, 5000,null , null));
 
 				} catch (MalformedURLException e) {
 					System.out.println("MalformedURLException...");
@@ -315,6 +331,9 @@ public class MainActivity extends Activity implements IReconDataReceiver {
 			
 			@Override
 			public void onError(int requestId, ERROR_TYPE type, String message) {
+				textView.setText("(TimeOut)");
+		        button_refresh.setVisibility(View.VISIBLE);
+		        refreshInProgress=false;
 				System.out.println("Error: " + type.toString() + "(" + message + ")");
 			}
 		};

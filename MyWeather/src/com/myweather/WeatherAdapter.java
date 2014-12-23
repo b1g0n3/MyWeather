@@ -39,7 +39,7 @@ public class WeatherAdapter extends ArrayAdapter<Weather>{
             holder.txtTime = (TextView)row.findViewById(R.id.txtTime);
             holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
             holder.txtTemperature = (TextView)row.findViewById(R.id.txtTemperature);
-            holder.txtPrecipitation = (TextView)row.findViewById(R.id.txtPrecipitation);
+            holder.txtwindBearing = (TextView)row.findViewById(R.id.txtWindBearing);
             holder.txtWind = (TextView)row.findViewById(R.id.txtWind);
             row.setTag(holder);
         }
@@ -51,7 +51,7 @@ public class WeatherAdapter extends ArrayAdapter<Weather>{
         holder.txtTime.setText(weather.time);
         holder.imgIcon.setImageResource(weather.icon);
         holder.txtTemperature.setText(weather.temperature);
-        holder.txtPrecipitation.setText(weather.precipitation);
+        holder.txtwindBearing.setText(weather.windBearing);
         holder.txtWind.setText(weather.wind);
         return row;
     }
@@ -62,7 +62,7 @@ public class WeatherAdapter extends ArrayAdapter<Weather>{
     	TextView txtTime;
         ImageView imgIcon;
         TextView txtTemperature;
-        TextView txtPrecipitation;
+        TextView txtwindBearing;
         TextView txtWind;
     }
 	

@@ -1,7 +1,23 @@
 package com.myweather;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
+import org.lucasr.twowayview.TwoWayView;
+
+import com.github.dvdme.ForecastIOLib.FIODaily;
+import com.github.dvdme.ForecastIOLib.ForecastIO;
+
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -10,11 +26,68 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.myweather.WeatherAdapter;
+import com.myweather.Weather;
+
 public class DaysActivity extends Activity {
+	
+	String data,language,unit;
+	static String key = "28faca837266a521f823ab10d1a45050";
+    String icon,time,temperature,precipitation,wind,vitesse;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_hours);
+		/// Recuperation de la session precedente
+    	SharedPreferences sharedpreferences = getSharedPreferences("com.myweather", Context.MODE_PRIVATE);
+    	data = sharedpreferences.getString("PreviousResult", "");
+    	language = sharedpreferences.getString("Language", "en");
+    	unit = sharedpreferences.getString("Unit", "F"); 
+    	System.out.println("get preferences..");
+		ForecastIO fio = new ForecastIO(key);
+		fio.getForecast(data);
+		FIODaily daily = new FIODaily(fio);
+		new FIODaily(fio);
+		for(int i = 0; i<daily.days(); i++){
+	        String [] h = daily.getDay(i).getFieldsArray();
+	        System.out.println("Day #"+(i+1));
+	        for(int j=0; j<h.length; j++)
+	            System.out.println(h[j]+": "+daily.getDay(i).getByKey(h[j]));
+	        System.out.println("\n");
+	    }
+		if (language=="en") vitesse = "mph"; else vitesse = "kmh";
+		Weather weather_data[] = new Weather[daily.days()] ;
+		for(int i = 0; i<daily.days(); i++){
+    		time = daily.getDay(i).getByKey("time");
+			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+			Date date; double date1=0;
+			try {
+				date = (Date)formatter.parse(time);
+				date1 = (date.getTime()/1000)+7200;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			Date date2 = new Date((long) (date1*1000));
+			SimpleDateFormat sdf = new SimpleDateFormat("E");
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT+1"));
+			time = sdf.format(date2);
+			icon =  daily.getDay(i).icon().replace("\"", "");
+    		String icon1 = "@drawable/"+icon.replace("-", "_");
+			Resources res = getResources();
+    		int icon = res.getIdentifier(icon1, "drawable", getPackageName() );
+			temperature = DoubleToI(daily.getDay(i).getByKey("temperatureMin"))+"°/"+DoubleToI(daily.getDay(i).getByKey("temperatureMax"))+"°";
+			String dir=headingToString2(Integer.valueOf(daily.getDay(i).getByKey("windBearing")));
+			wind = DoubleToI(daily.getDay(i).getByKey("windSpeed"))+" "+vitesse;//+"\n"+dir;
+			weather_data[i] = new Weather(time,icon,temperature,wind,dir);
+		}
+    	System.out.println("get weather content..");
+        WeatherAdapter adapter = new WeatherAdapter(this, R.layout.listview_item_row, weather_data);
+        TwoWayView listView1 = (TwoWayView) findViewById(R.id.lvItems);
+        listView1.setItemMargin(1);
+        listView1.setAdapter(adapter);
 	}
 
 	@Override 
@@ -65,6 +138,18 @@ public class DaysActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		overridePendingTransition(R.anim.slideup_in, R.anim.slideup_out);
-
 	}
+
+	public String DoubleToI(String sourceDouble) {
+		DecimalFormat df = new DecimalFormat("#");    		
+		double db=Double.valueOf(sourceDouble);
+		return df.format(db);
+	}
+
+	public static String headingToString2(double x)
+    {
+        String directions[] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
+        return directions[ (int)Math.round((  ((double)x % 360) / 45)) ];
+    }
+
 }
